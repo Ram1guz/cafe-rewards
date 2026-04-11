@@ -3,79 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jacaqu Café Rewards</title>
+    <meta name="theme-color" content="#18405c">
+    <title>Café Rewards</title>
+    <link rel="manifest" href="./manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="./css/style.css">
-    <style>
-        .brand-name { font-family: 'Parisienne', cursive; color: #18405c; font-size: 2.5rem; }
-        .cliente-info-display { color: #18405c; font-weight: bold; font-size: 1.2rem; margin-top: 10px; min-height: 1.5rem; }
-        .app-container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
-        .card { border: 1px solid #ddd; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        .button-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
-        button { cursor: pointer; padding: 10px; border-radius: 5px; border: none; width: 100%; }
-        .btn-registrar { background-color: #18405c; color: white; }
-        .btn-buscar { background-color: #2c6e91; color: white; }
-        .btn-limpiar { background-color: #666; color: white; margin-top: 10px; }
-        
-        /* Estilo para los nuevos datos del barista */
-        .detalle-barista { color: #555; font-size: 0.9rem; margin: 2px 0; }
-    </style>
 </head>
 <body>
 
     <div class="app-container">
         <header>
-            <img src="./logo.png" alt="Jacaqu Café Logo" class="logo" style="max-width: 150px;">
-            <h1 class="brand-name">Café Rewards</h1>
-            <p>Programa de Fidelidad</p>
+            <img src="./logo.png" alt="" class="logo" style="max-width: 150px;" id="logo-marca">
+            <h1 class="brand-name" id="brand-heading">Café Rewards</h1>
+            <p id="brand-tagline">Programa de fidelidad</p>
         </header>
 
         <section id="view-register" class="card">
-            <h2>Gestión de Cliente</h2>
+            <h2>Gestión de cliente</h2>
             <form id="form-registro">
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
                 <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-                <input type="tel" id="celular" name="celular" placeholder="Celular (Obligatorio)" required>
-                <input type="email" id="correo" name="correo" placeholder="Correo Electrónico (Obligatorio)" required>
-                
+                <input type="tel" id="celular" name="celular" placeholder="Celular (obligatorio)" required>
+                <input type="email" id="correo" name="correo" placeholder="Correo electrónico (obligatorio)" required>
+
                 <div style="text-align: left; margin: 10px 0;">
-                    <label style="color: #18405c; font-weight: bold; font-size: 0.9rem;">Fecha de Nacimiento:</label>
+                    <label for="fecha_nacimiento">Fecha de nacimiento</label>
                     <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
                 </div>
 
                 <div class="button-row">
-                    <button type="submit" class="btn-registrar">🆕 Registrar</button>
-                    <button type="button" class="btn-buscar" id="btn-buscar">🔍 Buscar por Nombre</button>
+                    <button type="submit" class="btn-registrar">Registrar</button>
+                    <button type="button" class="btn-buscar" id="btn-buscar">Buscar por nombre</button>
                 </div>
-                
-                <button type="button" class="btn-limpiar" id="btn-limpiar">✔️ Siguiente Cliente / Limpiar</button>
+
+                <button type="button" class="btn-limpiar" id="btn-limpiar">Siguiente cliente / limpiar</button>
             </form>
         </section>
 
         <section id="view-client" class="card points-section">
-            <h3>Estado del Cliente</h3>
-            <div id="display-nombre-cliente" class="cliente-info-display">Esperando selección...</div>
-            
+            <h3>Estado del cliente</h3>
+            <div id="display-nombre-cliente" class="cliente-info-display">Esperando selección…</div>
+
             <div id="info-contacto-cliente" style="margin: 10px 0;">
                 <p id="display-celular" class="detalle-barista"></p>
                 <p id="display-correo" class="detalle-barista"></p>
                 <p id="display-fecha" class="detalle-barista"></p>
             </div>
-            <div class="points-number" id="current-points" style="font-size: 3rem; color: #18405c;">0</div>
+            <div class="points-number" id="current-points">0</div>
             <p id="mensaje-puntos">Puntos acumulados</p>
-            
-            <div id="qrcode" style="margin: 20px auto; display: flex; justify-content: center; min-height: 128px;">
-            </div>
+            <p id="meta-canje" class="meta-canje"></p>
+
+            <div id="qrcode" style="margin: 20px auto; display: flex; justify-content: center; min-height: 128px;"></div>
 
             <button type="button" id="btn-add-point" class="btn-registrar" style="display:none;">
-                + Sumar Café (Punto)
+                + Sumar consumo (punto)
             </button>
         </section>
 
         <footer>
-            <button class="btn-ghost" onclick="alert('Área restringida')">Acceso Staff</button>
+            <button type="button" class="btn-ghost" id="btn-staff-placeholder">Acceso staff</button>
         </footer>
     </div>
 

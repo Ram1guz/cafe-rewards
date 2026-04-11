@@ -1,33 +1,18 @@
+require('dotenv').config();
 const express = require('express');
-const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
+const pool = require('./db');
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Evitar caché para ver cambios en tiempo real
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
-});
-
-// Archivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ==========================================
-// CONFIGURACIÓN DE POSTGRESQL (Ajustada para Docker)
-// ==========================================
-const pool = new Pool({
-    user: process.env.DB_USER || 'ramiro',
-    host: process.env.DB_HOST || 'db', 
-    database: process.env.DB_NAME || 'jacaqu_rewards',
-    password: process.env.DB_PASSWORD || '5262', 
-    port: 5432,
 });
 
 pool.connect((err, client, release) => {
@@ -38,80 +23,130 @@ pool.connect((err, client, release) => {
     release();
 });
 
-// ==========================================
-// API: Registrar Cliente (Coincide con main.js)
-// ==========================================
-app.post('/registro', async (req, res) => {
-    const { nombre, apellido, celular, correo, fecha_nacimiento } = req.body;
+function tenantSlugFromRequest(req) {
+    return (
+        req.headers['x-tenant-slug'] ||
+        req.query.negocio ||
+        req.body?.negocio_slug ||
+        ''
+    ).trim();
+}
 
-    // 1. Validación de campos vacíos
-    if (!nombre || !apellido || !celular || !correo || !fecha_nacimiento) {
-        return res.status(400).json({ error: "Faltan datos obligatorios para el registro." });
-    }
+async function negocioPorSlug(slug) {
+    if (!slug) return null;
+    const r = await pool.query('SELECT * FROM negocios WHERE slug = $1', [slug]);
+    return r.rows[0] || null;
+}
 
+// ---------- API (multi-marca) ----------
+app.get('/api/negocios/:slug/config', async (req, res) => {
     try {
-        const query = `
-            INSERT INTO clientes (nombre, apellido, celular, correo, puntos, fecha_nacimiento)
-            VALUES ($1, $2, $3, $4, 0, $5) RETURNING *`;
-        
-        const values = [nombre, apellido, celular, correo, fecha_nacimiento];
-        const resultado = await pool.query(query, values);
-
-        res.status(201).json(resultado.rows[0]);
-    } catch (err) {
-        console.error("❌ Error en DB:", err.message);
-        
-        // 2. Validación de duplicados (Celular o Correo)
-        if (err.code === '23505') {
-            res.status(400).json({ error: "El celular o el correo ya están registrados en el sistema." });
-        } else {
-            res.status(500).json({ error: "Hubo un problema técnico al guardar. Intenta de nuevo." });
+        const negocio = await negocioPorSlug(req.params.slug);
+        if (!negocio) {
+            return res.status(404).json({ error: 'Negocio no encontrado' });
         }
-    }
-});
-
-// ==========================================
-// API: Buscar Cliente (Coincide con main.js)
-// ==========================================
-app.get('/buscar', async (req, res) => {
-    // Extraemos los datos que vienen de la URL
-    const { nombre, apellido } = req.query;
-
-    try {
-        // 1. La consulta SQL con el SELECT * para traer TODO
-        const query = 'SELECT * FROM clientes WHERE nombre = $1 AND apellido = $2';
-        const result = await pool.query(query, [nombre, apellido]);
-
-        // 2. Verificamos si encontramos a alguien
-        if (result.rows.length > 0) {
-            console.log("✅ Cliente encontrado:", result.rows[0]);
-            res.json(result.rows[0]); // Enviamos toda la fila al frontend
-        } else {
-            console.log("❓ Cliente no existe en la DB");
-            res.status(404).json({ error: 'Cliente no encontrado' });
-        }
+        res.json({
+            slug: negocio.slug,
+            nombre_publico: negocio.nombre_publico,
+            color_primario: negocio.color_primario,
+            color_secundario: negocio.color_secundario,
+            font_heading: negocio.font_heading,
+            puntos_para_canje: negocio.puntos_para_canje,
+            texto_premio: negocio.texto_premio,
+            unidad_punto: negocio.unidad_punto,
+        });
     } catch (err) {
-        console.error("🚨 Error en la consulta SQL:", err);
+        console.error(err);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
-// ==========================================
-// API: Sumar Punto
-// ==========================================
-app.post('/sumar-punto', async (req, res) => {
-    const { id } = req.body;
+app.post('/api/registro', async (req, res) => {
+    const slug = tenantSlugFromRequest(req);
+    const negocio = await negocioPorSlug(slug);
+    if (!negocio) {
+        return res.status(400).json({ error: 'Indica un negocio válido (cabecera X-Tenant-Slug o negocio_slug).' });
+    }
+
+    const { nombre, apellido, celular, correo, fecha_nacimiento } = req.body;
+    if (!nombre || !apellido || !celular || !correo || !fecha_nacimiento) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios para el registro.' });
+    }
+
     try {
-        const query = 'UPDATE clientes SET puntos = puntos + 1 WHERE id = $1 RETURNING *';
-        const resultado = await pool.query(query, [id]);
+        const query = `
+            INSERT INTO clientes (negocio_id, nombre, apellido, celular, correo, puntos, fecha_nacimiento)
+            VALUES ($1, $2, $3, $4, $5, 0, $6) RETURNING *`;
+        const values = [negocio.id, nombre, apellido, celular, correo, fecha_nacimiento];
+        const resultado = await pool.query(query, values);
+        res.status(201).json(resultado.rows[0]);
+    } catch (err) {
+        console.error('❌ Error en DB:', err.message);
+        if (err.code === '23505') {
+            res.status(400).json({ error: 'El celular o el correo ya están registrados en este negocio.' });
+        } else {
+            res.status(500).json({ error: 'Hubo un problema técnico al guardar. Intenta de nuevo.' });
+        }
+    }
+});
+
+app.get('/api/buscar', async (req, res) => {
+    const slug = tenantSlugFromRequest(req);
+    const negocio = await negocioPorSlug(slug);
+    if (!negocio) {
+        return res.status(400).json({ error: 'Indica un negocio válido (cabecera X-Tenant-Slug o query negocio).' });
+    }
+
+    const { nombre, apellido } = req.query;
+    if (!nombre || !apellido) {
+        return res.status(400).json({ error: 'Nombre y apellido son obligatorios para buscar.' });
+    }
+
+    try {
+        const query =
+            'SELECT * FROM clientes WHERE negocio_id = $1 AND nombre = $2 AND apellido = $3';
+        const result = await pool.query(query, [negocio.id, nombre, apellido]);
+
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        } else {
+            res.status(404).json({ error: 'Cliente no encontrado' });
+        }
+    } catch (err) {
+        console.error('🚨 Error en la consulta SQL:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+app.post('/api/sumar-punto', async (req, res) => {
+    const slug = tenantSlugFromRequest(req);
+    const negocio = await negocioPorSlug(slug);
+    if (!negocio) {
+        return res.status(400).json({ error: 'Indica un negocio válido (cabecera X-Tenant-Slug o negocio_slug).' });
+    }
+
+    const id = Number(req.body?.id);
+    if (!id || Number.isNaN(id)) {
+        return res.status(400).json({ error: 'Falta id de cliente válido.' });
+    }
+
+    try {
+        const query =
+            'UPDATE clientes SET puntos = puntos + 1 WHERE id = $1 AND negocio_id = $2 RETURNING *';
+        const resultado = await pool.query(query, [id, negocio.id]);
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ error: 'Cliente no encontrado en este negocio.' });
+        }
         res.json({ success: true, puntos: resultado.rows[0].puntos });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Iniciar servidor - Escuchando en 0.0.0.0 para que Docker lo vea
-const PORT = 3000;
+// Archivos estáticos y SPA
+app.use(express.static(path.join(__dirname, 'public')));
+
+const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Servidor Jacaqu Café listo en puerto ${PORT}`);
+    console.log(`🚀 Servidor listo en puerto ${PORT} (multi-marca)`);
 });

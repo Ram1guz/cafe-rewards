@@ -21,6 +21,10 @@ services:
     depends_on:
       - db
     environment:
+      DB_HOST: db
+      DB_USER: ramiro
+      DB_PASSWORD: "5262"
+      DB_NAME: jacaqu_rewards
       DATABASE_URL: postgres://ramiro:5262@db:5432/jacaqu_rewards
     volumes:
       - .:/usr/src/app
