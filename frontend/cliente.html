@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Rewards - Mi Tarjeta Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Ajustes específicos para la vista móvil del cliente */
+        .puntos-badge {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #18405c;
+            margin: 10px 0;
+        }
+        .qr-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 20px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .promo-box {
+            background-color: #eef5f9;
+            border-left: 5px solid #18405c;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" style="padding-top: 15px;">
+        
+        <header style="margin-bottom: 15px;">
+            <img src="logo.png" alt="Logo Cafetería" class="brand-logo" style="display: block; margin: 0 auto; height: 100px; width: auto; object-fit: contain;">
+            <h1 style="font-family: 'Parisienne', cursive; font-size: 2.8rem; color: #18405c; margin-top: -5px; margin-bottom: 0;">Café Rewards</h1>
+            <p style="margin-top: 0; margin-bottom: 5px; color: #ffffff; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Tu Tarjeta de Fidelidad Digital</p>
+        </header>
+
+        <div class="card" style="padding: 20px; text-align: center;">
+            <h2 id="nombreCliente" style="font-size: 18px; color: #18405c; margin-top: 0; margin-bottom: 5px;">Cargando tus datos...</h2>
+            <p style="margin: 0; color: #777; font-size: 13px;">Puntos Acumulados</p>
+            
+            <div id="puntosActuales" class="puntos-badge">0</div>
+
+            <div class="qr-container">
+                <div id="qrcode"></div> </div>
+            <p style="font-size: 12px; color: #555; margin-top: -5px; font-weight: bold;">Muestra este QR al barista para sumar puntos</p>
+
+            <div class="promo-box">
+                <h4 style="margin: 0 0 5px 0; color: #18405c; font-size: 13px;">📢 Promoción del Día:</h4>
+                <p id="promoDia" style="margin: 0; font-size: 14px; color: #333;">Buscando promociones frescas...</p>
+            </div>
+
+            <div id="alertaCumple" style="display: none; background-color: #fff0f0; border: 1px dashed #cc0000; padding: 12px; border-radius: 8px; margin-top: 15px; color: #cc0000; font-size: 13px; font-weight: bold;">
+                🎉 ¡Felicidades! Tienes un regalo de cumpleaños activo. Reclámalo en caja.
+            </div>
+        </div>
+
+        <footer style="margin-top: 20px; color: rgba(255, 255, 255, 0.7); font-size: 11px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+    Jacaqu Café © 2026
+</footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="cliente.js"></script>
+</body>
+</html>

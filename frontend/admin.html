@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Rewards - Administrador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container" style="padding-top: 10px;">
+        
+        <header style="margin-bottom: 10px;">
+            <img src="logo.png" alt="Logo Cafetería" class="brand-logo" style="display: block; margin: 0 auto 0 auto; height: 110px; width: auto; object-fit: contain;">
+            <h1 style="font-family: 'Parisienne', cursive; font-size: 2.6rem; color: #18405c; margin-top: -5px; margin-bottom: 0;">Café Rewards</h1>
+            <p style="margin-top: 0; margin-bottom: 5px; color: #ffffff; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Panel de Control Administrativo</p>
+        </header>
+
+        <div class="card" style="margin-top: 0; padding: 15px;">
+            <h2 style="font-size: 15px; color: #18405c; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">⚙️ Configurar Campaña Activa</h2>
+            
+            <form id="formAdmin">
+                <!-- 1. Promoción del día -->
+                <div style="text-align: left; margin-bottom: 12px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c; display: block; margin-bottom: 4px;">📢 Promoción del Día:</label>
+                    <input type="text" id="promo_del_dia" placeholder="Ej: ¡Hoy 2x1 en Capuchinos medianos!" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+
+                <!-- 2. Descripción del Regalo físico -->
+                <div style="text-align: left; margin-bottom: 12px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c; display: block; margin-bottom: 4px;">🎁 Regalo de Cumpleaños (En Especie):</label>
+                    <input type="text" id="cumple_regalo_desc" placeholder="Ej: ¡Un café de cortesía + muffin!" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+
+                <!-- 3. NUEVO: Plazo de validez en días -->
+                <div style="text-align: left; margin-bottom: 12px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c; display: block; margin-bottom: 4px;">⏳ Plazo de Validez del Obsequio (Días):</label>
+                    <input type="number" id="cumple_plazo_dias" placeholder="Ej: 7" required min="1" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+
+                <!-- 4. CORREGIDO: Puntos acumulados del sistema global -->
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c; display: block; margin-bottom: 4px;">⭐ Puntos Acumulados Requeridos para Premio:</label>
+                    <input type="number" id="cumple_puntos_bono" placeholder="Ej: 10 (Puntos estándar para reclamar premio habitual)" min="0" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;">
+                </div>
+
+                <button type="submit" class="btn-registrar" style="width: 100%; background-color: #18405c; color: white; padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px;">
+                    💾 GUARDAR CONFIGURACIÓN
+                </button>
+            </form>
+        </div>
+
+        <a href="index.html" style="display: inline-block; margin-top: 15px; color: #ffffff; font-size: 13px; text-decoration: none; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            ⬅️ Volver al Panel Barista
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

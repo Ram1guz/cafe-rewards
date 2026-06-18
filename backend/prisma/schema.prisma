@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sucursal {
+  id            Int           @id @default(autoincrement())
+  nombre        String
+  direccion     String
+  transacciones Transaccion[]
+  usuarios      Usuario[]
+
+  @@map("sucursales")
+}
+
+model Cliente {
+  id               Int           @id @default(autoincrement())
+  nombre           String
+  apellido         String
+  celular          String        @unique
+  correo           String?
+  acepta_marketing Boolean       @default(false)
+  fecha_nacimiento DateTime?
+  puntos           Int           @default(0)
+  fecha_registro   DateTime      @default(now())
+  transacciones    Transaccion[] // 💡 SOLUCIÓN 1: Añadimos la relación inversa para que no dé error
+
+  @@map("clientes")
+}
+
+model ConfiguracionSistema {
+  id                 Int      @id @default(autoincrement())
+  promo_del_dia      String
+  cumple_regalo_desc String
+  cumple_puntos_bono Int      @default(0)
+  cumple_plazo_dias  Int      @default(0)
+  actualizado_en     DateTime @default(now()) @updatedAt
+
+  @@map("configuracion_sistema")
+}
+
+model Producto {
+  id                Int    @id @default(autoincrement())
+  nombre            String
+  puntos_necesarios Int
+
+  @@map("productos")
+}
+
+model Usuario {
+  id            Int           @id @default(autoincrement())
+  username      String        @unique
+  password      String
+  rol           String // "ADMIN" o "BARISTA"
+  sucursalId    Int?
+  sucursal      Sucursal?     @relation(fields: [sucursalId], references: [id])
+  transacciones Transaccion[] // 💡 SOLUCIÓN 2: Añadimos las transacciones que procesa este usuario
+
+  @@map("usuarios")
+}
+
+model Transaccion {
+  id               Int      @id @default(autoincrement())
+  clienteId        Int
+  sucursalId       Int
+  usuarioId        Int // Barista que procesó
+  puntos_ganados   Int      @default(0)
+  puntos_redimidos Int      @default(0)
+  fecha_hora       DateTime @default(now())
+
+  cliente  Cliente  @relation(fields: [clienteId], references: [id])
+  sucursal Sucursal @relation(fields: [sucursalId], references: [id])
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id]) // 💡 SOLUCIÓN 3: Creamos la relación física con Usuario
+
+  @@map("transacciones")
+}
+
+model Oferta {
+  id       Int      @id @default(autoincrement())
+  titulo   String
+  mensaje  String
+  tipo     String
+  vigencia DateTime
+
+  @@map("ofertas")
+}

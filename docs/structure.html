@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Estructura - cafe_rewars</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
+    header { margin-bottom: 12px }
+    #controls { margin-bottom: 12px }
+    button { padding: 6px 10px }
+    #diagram { border: 1px solid #eee; padding: 10px }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Estructura del proyecto cafe_rewars</h1>
+  </header>
+
+  <div id="controls">
+    <button id="downloadSvg">Descargar SVG</button>
+  </div>
+
+  <div id="diagram" class="mermaid">
+flowchart TB
+  root[cafe_rewars]
+  root --> docker_compose[docker-compose.yml]
+  root --> backend
+  root --> docs
+  root --> frontend
+
+  subgraph backend_sg [backend]
+    be_docker[Dockerfile]
+    be_pkg[package.json]
+    be_prisma[prisma]
+    be_src[src]
+    backend --> be_docker
+    backend --> be_pkg
+    backend --> be_prisma
+    backend --> be_src
+
+    subgraph be_prisma_sg [prisma]
+      p_schema[schema.prisma]
+      p_migrations[migrations]
+      be_prisma --> p_schema
+      be_prisma --> p_migrations
+
+      subgraph p_migrations_sg [migrations]
+        m_lock[migration_lock.toml]
+        m_folder[20260521185054_limpiar_y_estructurar_tablas]
+        p_migrations --> m_lock
+        p_migrations --> m_folder
+
+        m_folder --> m_sql[migration.sql]
+      end
+    end
+
+    subgraph be_src_sg [src]
+      s_index[index.js]
+      s_prisma[prisma.js]
+      s_config[config]
+      s_controllers[controllers]
+      s_routes[routes]
+      s_services[services]
+      be_src --> s_index
+      be_src --> s_prisma
+      be_src --> s_config
+      be_src --> s_controllers
+      be_src --> s_routes
+      be_src --> s_services
+
+      subgraph s_config_sg [config]
+        cfg_dotenv[dotenv.js]
+      end
+
+      subgraph s_controllers_sg [controllers]
+        ctrl_campana[campanaController.js]
+        ctrl_cliente[clienteController.js]
+        ctrl_producto[productoController.js]
+      end
+
+      subgraph s_routes_sg [routes]
+        route_cliente[clienteRoutes.js]
+      end
+
+      subgraph s_services_sg [services]
+        svc_correo[correoService.js]
+        svc_plantillas[plantillasCorreo.js]
+      end
+    end
+  end
+
+  subgraph docs_sg [docs]
+    docs_spect[Spect.md]
+  end
+
+  subgraph frontend_sg [frontend]
+    fe_admin_html[admin.html]
+    fe_admin_js[admin.js]
+    fe_app_js[app.js]
+    fe_cliente_html[cliente.html]
+    fe_cliente_js[cliente.js]
+    fe_index_html[index.html]
+    fe_style_css[style.css]
+    frontend --> fe_admin_html
+    frontend --> fe_admin_js
+    frontend --> fe_app_js
+    frontend --> fe_cliente_html
+    frontend --> fe_cliente_js
+    frontend --> fe_index_html
+    frontend --> fe_style_css
+  end
+
+  </div>
+
+  <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+
+    function downloadSVG() {
+      const svg = document.querySelector('#diagram svg');
+      if (!svg) { alert('SVG no encontrado; espera a que Mermaid renderice.'); return; }
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cafe_rewars_structure.svg';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('downloadSvg').addEventListener('click', downloadSVG);
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" trasnlate="no" class="notranslate"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Rewards - Barista App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <!-- Librería para leer QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="stylesheet" href="style.css">
+   <style>
+        /* 📷 La marca sobresale: la hacemos más grande e importante */
+        .brand-logo {
+            display: block;
+            margin: 0 auto 5px auto;
+            height: 140px; /* Subimos de 90px a 140px para que tenga gran presencia */
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* ☕ 'Café Rewards' pasa a ser el subtítulo de apoyo, más sutil y estilizado */
+        .brand-name {
+            font-size: 1.5rem !important; /* Reducimos el tamaño del texto */
+            letter-spacing: 1px; /* Le da un toque más aireado y sofisticado */
+            margin-top: 0px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <!-- 📷 AQUÍ ESTÁ TU LOGO -->
+            <img src="logo.png" alt="Logo Cafetería" class="brand-logo">
+            <h1 class="brand-name" style="font-family: 'Parisienne', cursive;">Café Rewards</h1>
+            <p>Panel del Barista</p>
+        </header>
+
+        <!-- SECCIÓN 1: ESCÁNER QR -->
+        <div class="card">
+            <button id="btnAbrirCamara" class="btn-registrar" style="font-size: 16px; margin-bottom: 10px;">
+                📷 ESCANEAR QR CLIENTE
+            </button>
+            <div id="reader" class="hidden" style="width: 100%; border-radius: 15px;"></div>
+        </div>
+
+        <!-- SECCIÓN 2: RESULTADO Y PUNTOS -->
+<div id="puntosContenedor" class="points-section hidden">
+    <h2 id="nombreCliente" style="color: #5d4037; margin-bottom: 5px;">Cliente</h2>
+    <p id="infoAdicional" style="font-size: 12px; color: #888; margin-bottom: 5px;"></p>
+    
+    <!-- 🎁 MENSAJE DE CUMPLEAÑOS -->
+    <div id="mensajeCumpleDisplay" class="hidden" style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; font-weight: bold; border: 1px dashed #ffeeba;"></div>
+    
+    <div id="displayPuntos" class="points-number">0</div>
+    
+    <!-- ☕ PROMO DEL DÍA -->
+    <p style="font-size: 12px; font-weight: bold; color: #18405c; margin-top: 5px;">Promoción disponible:</p>
+    <div id="promoDiaDisplay" style="font-style: italic; color: #555; margin-bottom: 15px; font-size: 13px;">Ninguna</div>
+
+    <div class="button-row">
+        <button id="btnSumarPunto" class="btn-registrar" style="background-color: #28a745;">+1 PUNTO</button>
+    </div>
+    <button id="btnCerrarPerfil" class="btn-limpiar">Cerrar Perfil</button>
+</div>
+
+        <!-- SECCIÓN 3: REGISTRO / BÚSQUEDA MANUAL -->
+        <div class="card" id="seccionManual">
+            <h2 style="font-size: 14px;">Búsqueda o Registro Manual</h2>
+            <input type="text" id="nombre" placeholder="Nombre (Obligatorio)">
+            <input type="text" id="apellido" placeholder="Apellido (Obligatorio)">
+            <input type="number" id="celular" placeholder="Celular (Número Entero Obligatorio)" inputmode="numeric" pattern="[0-9]*">
+            <input type="email" id="correo" placeholder="Correo Electrónico (Opcional - ej: nombre@mail.com)">
+
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label style="font-size: 10px; color: #18405c; margin-left: 5px;">Fecha Nacimiento (Opcional)</label>
+                <input type="date" id="fecha_nacimiento" min="1950-01-01">
+                <div style="text-align: left; margin-bottom: 10px; margin-left: 5px;">
+    <input type="checkbox" id="acepta_marketing" style="width: auto; margin-right: 5px;">
+    <label for="acepta_marketing" style="font-size: 11px; color: #18405c; cursor: pointer;">Acepta recibir ofertas y marketing por correo</label>
+</div>
+            </div>
+
+            <div class="button-row" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                <button id="btnBuscar" class="btn-buscar notraslate" traslate=no style="flex: 1; min-width: 100px;">BUSCAR</button>
+                <button id="btnRegistrar" class="btn-registrar" style="flex: 1; min-width: 140px;">REGISTRAR NUEVO</button>
+                <button id="btnEditar" class="btn-buscar" style="background-color: #6c757d; color: white; display: none; flex: 1; min-width: 100px;">✏️ EDITAR</button>
+                <button id="btnGuardarCambios" class="btn-registrar" style="background-color: #ff9800; display: none; flex: 1; min-width: 140px;">💾 GUARDAR</button>
+            </div>
+            <button id="btnLimpiar" class="btn-limpiar">Limpiar Todo</button>
+        </div>
+    </div>
+
+    <!-- 1. LIBRERÍA DE AXIOS (Añadida para conectar con la API) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- 2. TU LÓGICA DE NEGOCIO -->
+    <script src="app.js"></script>
+</body>
+</html>

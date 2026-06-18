@@ -1,0 +1,88 @@
+flowchart TB
+  root[cafe_rewars]
+  root --> docker_compose[docker-compose.yml]
+  root --> backend
+  root --> docs
+  root --> frontend
+
+  subgraph backend_sg [backend]
+    be_docker[Dockerfile]
+    be_pkg[package.json]
+    be_prisma[prisma]
+    be_src[src]
+    backend --> be_docker
+    backend --> be_pkg
+    backend --> be_prisma
+    backend --> be_src
+
+    subgraph be_prisma_sg [prisma]
+      p_schema[schema.prisma]
+      p_migrations[migrations]
+      be_prisma --> p_schema
+      be_prisma --> p_migrations
+
+      subgraph p_migrations_sg [migrations]
+        m_lock[migration_lock.toml]
+        m_folder[20260521185054_limpiar_y_estructurar_tablas]
+        p_migrations --> m_lock
+        p_migrations --> m_folder
+
+        m_folder --> m_sql[migration.sql]
+      end
+    end
+
+    subgraph be_src_sg [src]
+      s_index[index.js]
+      s_prisma[prisma.js]
+      s_config[config]
+      s_controllers[controllers]
+      s_routes[routes]
+      s_services[services]
+      be_src --> s_index
+      be_src --> s_prisma
+      be_src --> s_config
+      be_src --> s_controllers
+      be_src --> s_routes
+      be_src --> s_services
+
+      subgraph s_config_sg [config]
+        cfg_dotenv[dotenv.js]
+      end
+
+      subgraph s_controllers_sg [controllers]
+        ctrl_campana[campanaController.js]
+        ctrl_cliente[clienteController.js]
+        ctrl_producto[productoController.js]
+      end
+
+      subgraph s_routes_sg [routes]
+        route_cliente[clienteRoutes.js]
+      end
+
+      subgraph s_services_sg [services]
+        svc_correo[correoService.js]
+        svc_plantillas[plantillasCorreo.js]
+      end
+    end
+  end
+
+  subgraph docs_sg [docs]
+    docs_spect[Spect.md]
+  end
+
+  subgraph frontend_sg [frontend]
+    fe_admin_html[admin.html]
+    fe_admin_js[admin.js]
+    fe_app_js[app.js]
+    fe_cliente_html[cliente.html]
+    fe_cliente_js[cliente.js]
+    fe_index_html[index.html]
+    fe_style_css[style.css]
+    frontend --> fe_admin_html
+    frontend --> fe_admin_js
+    frontend --> fe_app_js
+    frontend --> fe_cliente_html
+    frontend --> fe_cliente_js
+    frontend --> fe_index_html
+    frontend --> fe_style_css
+  end

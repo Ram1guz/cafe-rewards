@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # 1. BASE DE DATOS (PostgreSQL)
+  db:
+    image: postgres:16-alpine
+    container_name: jacaqu_db
+    restart: always
+    environment:
+      POSTGRES_USER: ramiro
+      POSTGRES_PASSWORD: 5262
+      POSTGRES_DB: jacaqu
+    # En producción quitamos el mapeo de puertos hacia afuera por seguridad. 
+    # Solo tu app de Node se comunicará internamente con la BD en el puerto 5432.
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - jacaqu_network
+
+  # 2. EL BACKEND Y FRONTEND (Tu App de Node.js)
+  app:
+    build:
+      context: ./backend  # Ruta hacia la carpeta de tu código donde está tu Dockerfile
+    container_name: jacaqu_app
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://ramiro:5262@db:5432/jacaqu?schema=public
+      - PORT=3000
+    # Al igual que la BD, se queda interna en la red de Docker. Nginx hablará con ella.
+    expose:
+      - "3000"
+    depends_on:
+      - db
+    networks:
+      - jacaqu_network
+
+  # 3. EL GUARDIÁN HTTPS (Nginx Proxy Manager)
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: jacaqu_proxy
+    restart: always
+    ports:
+      # Puertos públicos para los clientes y los QR
+      - '80:80'   # HTTP estándar
+      - '443:443' # HTTPS Seguro (Candado verde)
+      # Panel visual de administración del Proxy
+      - '81:81'   
+    volumes:
+      - ./proxy/data:/data
+      - ./proxy/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - app
+    networks:
+      - jacaqu_network
+
+volumes:
+  postgres_data:
+
+networks:
+  jacaqu_network:
+    driver: bridge

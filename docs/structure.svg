@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="900" viewBox="0 0 1000 900">
+  <style>
+    .title { font: bold 18px Arial, sans-serif; }
+    .folder { font: 14px Arial, sans-serif; fill: #1f2937; }
+    .file { font: 13px Arial, sans-serif; fill: #374151; }
+    .box { fill: #fff; stroke: #e5e7eb; stroke-width: 1; rx:6; }
+  </style>
+
+  <rect x="8" y="8" width="984" height="884" rx="8" fill="#fbfdff" stroke="#e6eef8"/>
+  <text x="28" y="36" class="title">Proyecto: cafe_rewars</text>
+
+  <!-- Root children -->
+  <g transform="translate(28,60)">
+    <g>
+      <rect class="box" x="0" y="0" width="220" height="28"/>
+      <text x="12" y="18" class="file">docker-compose.yml</text>
+    </g>
+
+    <g transform="translate(0,44)">
+      <rect class="box" x="0" y="0" width="360" height="28"/>
+      <text x="12" y="18" class="folder">backend/</text>
+    </g>
+
+    <g transform="translate(0,92)">
+      <rect class="box" x="0" y="0" width="240" height="28"/>
+      <text x="12" y="18" class="folder">docs/</text>
+    </g>
+
+    <g transform="translate(0,140)">
+      <rect class="box" x="0" y="0" width="360" height="28"/>
+      <text x="12" y="18" class="folder">frontend/</text>
+    </g>
+  </g>
+
+  <!-- backend subtree -->
+  <g transform="translate(220,120)">
+    <text x="12" y="0" class="folder">backend/</text>
+
+    <g transform="translate(12,12)">
+      <text x="0" y="28" class="file">Dockerfile</text>
+      <text x="0" y="52" class="file">package.json</text>
+
+      <text x="0" y="86" class="folder">prisma/</text>
+      <g transform="translate(14,96)">
+        <text x="0" y="20" class="file">schema.prisma</text>
+        <text x="0" y="40" class="folder">migrations/</text>
+        <g transform="translate(14,44)">
+          <text x="0" y="20" class="file">migration_lock.toml</text>
+          <text x="0" y="44" class="folder">20260521185054_limpiar_y_estructurar_tablas/</text>
+          <g transform="translate(14,56)">
+            <text x="0" y="20" class="file">migration.sql</text>
+          </g>
+        </g>
+      </g>
+
+      <text x="0" y="210" class="folder">src/</text>
+      <g transform="translate(14,220)">
+        <text x="0" y="20" class="file">index.js</text>
+        <text x="0" y="44" class="file">prisma.js</text>
+        <text x="0" y="68" class="folder">config/</text>
+        <g transform="translate(14,72)">
+          <text x="0" y="20" class="file">dotenv.js</text>
+        </g>
+
+        <text x="0" y="116" class="folder">controllers/</text>
+        <g transform="translate(14,120)">
+          <text x="0" y="20" class="file">campanaController.js</text>
+          <text x="0" y="44" class="file">clienteController.js</text>
+          <text x="0" y="68" class="file">productoController.js</text>
+        </g>
+
+        <text x="0" y="164" class="folder">routes/</text>
+        <g transform="translate(14,168)">
+          <text x="0" y="20" class="file">clienteRoutes.js</text>
+        </g>
+
+        <text x="0" y="200" class="folder">services/</text>
+        <g transform="translate(14,204)">
+          <text x="0" y="20" class="file">correoService.js</text>
+          <text x="0" y="44" class="file">plantillasCorreo.js</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- docs and frontend details -->
+  <g transform="translate(28,420)">
+    <text x="0" y="0" class="folder">docs/</text>
+    <text x="14" y="28" class="file">Spect.md</text>
+  </g>
+
+  <g transform="translate(220,420)">
+    <text x="0" y="0" class="folder">frontend/</text>
+    <g transform="translate(14,12)">
+      <text x="0" y="20" class="file">admin.html</text>
+      <text x="0" y="44" class="file">admin.js</text>
+      <text x="0" y="68" class="file">app.js</text>
+      <text x="0" y="92" class="file">cliente.html</text>
+      <text x="0" y="116" class="file">cliente.js</text>
+      <text x="0" y="140" class="file">index.html</text>
+      <text x="0" y="164" class="file">style.css</text>
+    </g>
+  </g>
+
+  <text x="28" y="860" font-size="12" fill="#6b7280">Generado automáticamente por asistente — archivo estático SVG</text>
+</svg>

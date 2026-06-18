@@ -1,0 +1,81 @@
+/* Estilos Base */
+body {
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.app-container {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+header {
+    background-color: #18405c; /* Tu azul corporativo */
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.card, .points-section {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Inputs elegantes */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+/* Botones con tu paleta */
+.btn-registrar, .btn-buscar {
+    background-color: #18405c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-limpiar {
+    background: none;
+    border: 1px solid #888;
+    color: #555;
+    padding: 8px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.points-number {
+    font-size: 48px;
+    font-weight: bold;
+    color: #18405c;
+    margin: 15px 0;
+}
+
+/* LA CLAVE: Ocultar bloques */
+.hidden {
+    display: none !important;
+}
