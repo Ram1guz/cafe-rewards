@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Obtener el ID del cliente desde la barra de direcciones (URL)
-    // Ejemplo: http://localhost:3000/cliente.html?id=1
+    // Ejemplo: /cliente.html?id=1
     const urlParams = new URLSearchParams(window.location.search);
     const clienteId = urlParams.get('id');
 
@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // URL base de tu API corriendo en Docker/Ubuntu
-    const API_URL = `http://localhost:3000/clientes/${clienteId}/panel-fidelidad`;
+    // URL base de tu API expuesta por el proxy (ruta relativa)
+    const API_URL = `/clientes/${clienteId}/panel-fidelidad`;
 
     try {
         // 2. Hacer la petición al backend unificado que creamos ayer

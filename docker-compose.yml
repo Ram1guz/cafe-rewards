@@ -31,6 +31,8 @@ services:
     # Al igual que la BD, se queda interna en la red de Docker. Nginx hablará con ella.
     expose:
       - "3000"
+    volumes:
+      - ./frontend:/app/frontend    
     depends_on:
       - db
     networks:

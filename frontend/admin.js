@@ -1,4 +1,4 @@
-const API_CONFIG_URL = 'http://localhost:3000/clientes/config-admin';
+const API_CONFIG_URL = '/clientes/config-admin';
 
 // Al cargar la página, traemos la última configuración guardada
 document.addEventListener('DOMContentLoaded', async () => {

@@ -10,44 +10,21 @@ import {
   pedirRecompensa 
 } from '../controllers/clienteController.js';
 
-// Importamos las funciones desde campanaController.js (Unificadas) ☕
 import { 
   obtenerPanelCliente, 
-  guardarConfiguracionAdmin, 
-  obtenerConfiguracionAdmin
+  guardarConfiguracionAdmin
 } from '../controllers/campanaController.js';
 
-import prisma from '../prisma.js'; // Necesario para la lectura rápida de la configuración
+import prisma from '../prisma.js';
 
 const router = Router();
 
-// --- RUTAS DE CLIENTES ---
+// --- 1. CONFIGURACIÓN DEL ADMIN (Rutas fijas van ARRIBA) ---
 
-// 1. Obtener todos los clientes (GET http://localhost:3000/clientes)
-router.get('/', obtenerClientes);
-
-// 2. Registrar un nuevo cliente (POST http://localhost:3000/clientes)
-router.post('/', registrarCliente);
-
-// 3. Actualizar datos de un cliente existente (PUT http://localhost:3000/clientes/:id)
-router.put('/:id', actualizarCliente);
-
-// 4. Sumar un punto al cliente (PATCH http://localhost:3000/clientes/:id/sumar-puntos)
-router.patch('/:id/sumar-puntos', sumarPuntos);
-
-// 5. Canjear un premio / recompensa (POST http://localhost:3000/clientes/:id/recompensa)
-router.post('/:id/recompensa', pedirRecompensa);
-
-
-// --- RUTAS DE FIDELIZACIÓN Y CAMPAÑAS ---
-
-// 6. Panel de fidelidad del Barista (GET http://localhost:3000/clientes/:id/panel-fidelidad)
-router.get('/:id/panel-fidelidad', obtenerPanelCliente);
-
-// 7. GUARDAR configuración del Admin (POST http://localhost:3000/clientes/config-admin)
+// GUARDAR configuración del Admin (POST https://3.133.218.54/clientes/config-admin)
 router.post('/config-admin', guardarConfiguracionAdmin);
 
-// 8. LEER configuración del Admin (GET http://localhost:3000/clientes/config-admin)
+// LEER configuración del Admin (GET https://3.133.218.54/clientes/config-admin)
 router.get('/config-admin', async (req, res) => {
   try {
     const config = await prisma.configuracionSistema.findFirst({
@@ -60,10 +37,19 @@ router.get('/config-admin', async (req, res) => {
   }
 });
 
-// 🔥 RUTA DE PRUEBA DE FUEGO AUTOMATIZADA (GET http://localhost:3000/clientes/test-email)
+
+// --- 2. RUTAS DE PRUEBA Y GENERALES DE CLIENTES ---
+
+// Obtener todos los clientes
+router.get('/', obtenerClientes);
+
+// Registrar un nuevo cliente
+router.post('/', registrarCliente);
+
+
+// --- 3. PRUEBA DE FUEGO AUTOMATIZADA DE CORREO ---
 router.get('/test-email', async (req, res) => {
   try {
-    // 1. Jalamos la configuración real que guardó el administrador con Prisma
     const config = await prisma.configuracionSistema.findFirst({
       orderBy: { id: 'desc' }
     }) || {
@@ -71,7 +57,6 @@ router.get('/test-email', async (req, res) => {
       cumple_plazo_dias: 7
     };
 
-    // 2. 🧮 Calculamos la fecha límite real basada en tus días configurados
     const hoy = new Date();
     const limite = new Date();
     limite.setDate(hoy.getDate() + parseInt(config.cumple_plazo_dias, 10));
@@ -82,14 +67,12 @@ router.get('/test-email', async (req, res) => {
       year: 'numeric'
     });
 
-    // 3. Generamos la plantilla pasándole los 3 DATOS REQUERIDOS (¡Incluyendo la fecha!)
     const htmlVisual = obtenerPlantillaCumpleanos(
       "Ramiro Guz", 
       config.cumple_regalo_desc, 
       fechaVencimientoTexto
     );
     
-    // 4. Disparamos el correo a tu dirección
     const enviado = await enviarCorreo(
       "ramiguz@gmail.com", 
       `🎉 ¡Feliz Cumpleaños de parte de Café Rewards! (Válido hasta el ${fechaVencimientoTexto})`, 
@@ -113,5 +96,20 @@ router.get('/test-email', async (req, res) => {
     res.status(500).send(`<h1>❌ Error crítico en la ruta: ${error.message}</h1>`);
   }
 });
+
+
+// --- 4. RUTAS DINÁMICAS POR ID (Van ABAJO del todo) ---
+
+// Actualizar datos de un cliente
+router.put('/:id', actualizarCliente);
+
+// Sumar un punto al cliente
+router.patch('/:id/sumar-puntos', sumarPuntos);
+
+// Canjear un premio / recompensa
+router.post('/:id/recompensa', pedirRecompensa);
+
+// Panel de fidelidad del Barista
+router.get('/:id/panel-fidelidad', obtenerPanelCliente);
 
 export default router;

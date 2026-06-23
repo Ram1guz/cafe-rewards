@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/clientes'; 
+const API_URL = '/clientes';
 let html5QrCode;
 let clienteActualId = null;
 

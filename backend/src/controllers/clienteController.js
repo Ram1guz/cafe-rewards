@@ -1,12 +1,44 @@
 import prisma from '../prisma.js';
 
-// 1. OBTENER TODOS LOS CLIENTES
+// 1. OBTENER CLIENTES (Con filtro de búsqueda inteligente)
 export const obtenerClientes = async (req, res) => {
   try {
-    const clientes = await prisma.cliente.findMany({
+    const { q } = req.query;
+
+    // Si no viene ningún parámetro de búsqueda, devolvemos todos como antes
+    if (!q) {
+      const clientes = await prisma.cliente.findMany({
+        orderBy: { id: 'asc' }
+      });
+      return res.json(clientes);
+    }
+
+    // Intentamos convertir 'q' a número por si el barista escaneó un QR (ID)
+    const idBuscar = parseInt(q, 10);
+    const esNumero = !isNaN(idBuscar);
+
+    // Buscamos en la base de datos aplicando los filtros
+    const clientesFiltrados = await prisma.cliente.findMany({
+      where: {
+        OR: [
+          // 1. Si es número, busca coincidencia exacta en el ID
+          ...(esNumero ? [{ id: idBuscar }] : []),
+          
+          // 2. Busca coincidencia parcial en Nombre (insensible a mayúsculas)
+          { nombre: { contains: q, mode: 'insensitive' } },
+          
+          // 3. Busca coincidencia parcial en Apellido
+          { apellido: { contains: q, mode: 'insensitive' } },
+          
+          // 4. Busca coincidencia parcial en Celular
+          { celular: { contains: q } }
+        ]
+      },
       orderBy: { id: 'asc' }
     });
-    res.json(clientes);
+
+    res.json(clientesFiltrados);
+
   } catch (error) {
     console.error('❌ Error al obtener clientes:', error);
     res.status(500).json({ error: 'No se pudieron cargar los clientes.' });
