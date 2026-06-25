@@ -2,6 +2,41 @@ const API_URL = '/clientes';
 let html5QrCode;
 let clienteActualId = null;
 
+// --- 🔐 FUNCIÓN EXPLÍCITA PARA PINTAR EL SALUDO ---
+function verificarUsuarioYSaludar() {
+    const nombreBarista = localStorage.getItem("usuarioNombre");
+    const contenedorSaludo = document.getElementById("saludoBarista");
+
+    // Si el elemento no existe en el HTML todavía, salimos para evitar errores
+    if (!contenedorSaludo) return;
+
+    if (nombreBarista) {
+        contenedorSaludo.innerHTML = `☕ <strong>Atendido por:</strong> ${nombreBarista}`;
+    } else {
+        // Si no hay sesión iniciada, redirigimos al login
+        window.location.href = "/login.html";
+    }
+}
+
+// --- ⚙️ INICIALIZACIÓN AL CARGAR LA PÁGINA ---
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Ejecutar el saludo de inmediato en cuanto el DOM esté listo
+    verificarUsuarioYSaludar();
+
+    // 2. Configuración inicial de límites de fecha y botones
+    const hoy = new Date().toISOString().split("T")[0];
+    const inputFecha = document.getElementById('fecha_nacimiento');
+    if (inputFecha) inputFecha.setAttribute("max", hoy);
+    
+    gestionarBotonesFormulario('inicio');
+});
+
+// --- 🔄 RESPALDO ULTRA SEGURO ---
+// Por si el DOM va muy rápido, esta función se vuelve a asegurar cuando todo el sitio cargue visualmente
+window.onload = () => {
+    verificarUsuarioYSaludar();
+};
+
 // --- FUNCIONES DE CONTROL DE INTERFAZ (UI) ---
 
 function bloquearInputs(debeBloquear) {
@@ -10,7 +45,7 @@ function bloquearInputs(debeBloquear) {
     if (document.getElementById('celular')) document.getElementById('celular').disabled = debeBloquear;
     if (document.getElementById('correo')) document.getElementById('correo').disabled = debeBloquear;
     if (document.getElementById('fecha_nacimiento')) document.getElementById('fecha_nacimiento').disabled = debeBloquear;
-    if (document.getElementById('acepta_marketing')) document.getElementById('acepta_marketing').disabled = debeBloquear; // 💡 NUEVO
+    if (document.getElementById('acepta_marketing')) document.getElementById('acepta_marketing').disabled = debeBloquear;
 }
 
 function gestionarBotonesFormulario(modo) {
@@ -44,7 +79,6 @@ function validarDatosFormulario(nombre, apellido, celular, correo, fechaInput) {
     if (!celular) { alert("⚠️ El campo 'Celular' es obligatorio."); return false; }
     if (!/^\d+$/.test(celular)) { alert("⚠️ El celular debe ser un número entero válido."); return false; }
     
-    // Validar Correo de forma estricta si el usuario escribió algo o si marcó recibir marketing
     const checkboxMarketing = document.getElementById('acepta_marketing');
     const aceptaMarketing = checkboxMarketing ? checkboxMarketing.checked : false;
 
@@ -58,7 +92,6 @@ function validarDatosFormulario(nombre, apellido, celular, correo, fechaInput) {
         if (!emailRegex.test(correo)) { alert("⚠️ El formato del Correo Electrónico es inválido (ejemplo: usuario@correo.com)."); return false; }
     }
     
-    // Validar Fecha de forma estricta (Formato AAAA-MM-DD nativo del input date)
     if (fechaInput && fechaInput.trim() !== "") {
         const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!fechaRegex.test(fechaInput)) { alert("⚠️ Formato de fecha inválido."); return false; }
@@ -69,14 +102,6 @@ function validarDatosFormulario(nombre, apellido, celular, correo, fechaInput) {
     }
     return true;
 }
-
-// --- CONFIGURACIÓN INICIAL ---
-document.addEventListener('DOMContentLoaded', () => {
-    const hoy = new Date().toISOString().split("T")[0];
-    const inputFecha = document.getElementById('fecha_nacimiento');
-    if (inputFecha) inputFecha.setAttribute("max", hoy);
-    gestionarBotonesFormulario('inicio');
-});
 
 // --- LÓGICA DE LA CÁMARA ---
 document.getElementById('btnAbrirCamara').addEventListener('click', () => {
@@ -100,7 +125,8 @@ function detenerCamara() {
     }
 }
 
-// 1. BUSCAR CLIENTE (GET) con selector para nombres duplicados
+// --- ACCIONES DE LA API ---
+
 async function buscarCliente(valor) {
     try {
         const respuesta = await axios.get(API_URL, { params: { q: valor } });
@@ -109,7 +135,6 @@ async function buscarCliente(valor) {
         if (data && data.length > 0) {
             let cliente = data[0];
 
-            // 🔀 CONTROL DE COINCIDENCIAS MÚLTIPLES (Ej: Dos Pedros)
             if (data.length > 1) {
                 let mensajePrompt = `Se encontraron ${data.length} clientes. Escribe el número del correcto:\n\n`;
                 data.forEach((c, index) => {
@@ -117,7 +142,7 @@ async function buscarCliente(valor) {
                 });
                 
                 const seleccion = prompt(mensajePrompt, "1");
-                if (seleccion === null) return; // Canceló el prompt
+                if (seleccion === null) return; 
                 
                 const idx = parseInt(seleccion, 10) - 1;
                 if (idx >= 0 && idx < data.length) {
@@ -127,7 +152,6 @@ async function buscarCliente(valor) {
                 }
             }
             
-            // Cargar datos en los campos
             document.getElementById('nombre').value = cliente.nombre || '';
             document.getElementById('apellido').value = cliente.apellido || '';
             document.getElementById('celular').value = cliente.celular || '';
@@ -136,7 +160,6 @@ async function buscarCliente(valor) {
                 document.getElementById('correo').value = cliente.correo || '';
             }
             
-            // Cargar el checkbox de marketing 💡 NUEVO
             if (document.getElementById('acepta_marketing')) {
                 document.getElementById('acepta_marketing').checked = cliente.acepta_marketing || false;
             }
@@ -147,7 +170,6 @@ async function buscarCliente(valor) {
                 document.getElementById('fecha_nacimiento').value = '';
             }
 
-            // 💡 MEJORA CONSOLIDACIÓN: Consultamos el Panel de Fidelidad (Promos + Cumpleaños) en paralelo
             cargarPanelFidelidadCliente(cliente.id, cliente.celular);
             
             bloquearInputs(true); 
@@ -161,7 +183,6 @@ async function buscarCliente(valor) {
     }
 }
 
-// 💡 NUEVA FUNCIÓN: Llama al backend unificado para pintar promos y cumpleaños
 async function cargarPanelFidelidadCliente(id, celular) {
     clienteActualId = id;
     try {
@@ -173,13 +194,11 @@ async function cargarPanelFidelidadCliente(id, celular) {
         document.getElementById('infoAdicional').innerText = `Cel: ${celular}`;
         document.getElementById('displayPuntos').innerText = panel.cliente.puntosActuales;
 
-        // Inyectar Promo del Día de forma dinámica si tienes un contenedor en tu HTML
         const contenedorPromo = document.getElementById('promoDiaDisplay');
         if (contenedorPromo) {
             contenedorPromo.innerText = panel.promocionDelDia;
         }
 
-        // Si es su cumpleaños, alertar al barista y pintar el mensaje especial 🎁
         if (panel.cumpleanos.esHoy) {
             alert(`🎉 ¡ATENCIÓN BARISTA! Hoy es el cumpleaños de este cliente. \nRegalo: ${panel.cumpleanos.mensajeEspecial}`);
             const contenedorCumple = document.getElementById('mensajeCumpleDisplay');
@@ -194,22 +213,26 @@ async function cargarPanelFidelidadCliente(id, celular) {
 
     } catch (err) {
         console.error("❌ Error al cargar panel de fidelidad:", err);
-        // Fallback clásico por si falla el panel
         document.getElementById('puntosContenedor').classList.remove('hidden');
     }
 }
 
 function mostrarPerfil(cliente) {
-    // Redireccionamos a la función inteligente unificada para traer promos y cumple
     cargarPanelFidelidadCliente(cliente.id, cliente.celular);
 }
 
-// 2. SUMAR PUNTOS (PATCH)
 document.getElementById('btnSumarPunto').addEventListener('click', async () => {
     if (!clienteActualId) return;
+    
+    // Obtenemos de forma dinámica el ID del barista que inició sesión
+    const baristaId = localStorage.getItem("usuarioId"); 
+
     try {
-        const respuesta = await axios.patch(`${API_URL}/${clienteActualId}/sumar-puntos`);
-        // Nuestra ruta devuelve { puntosTotales }, ajustamos la propiedad
+        // Le mandamos el baristaId en el cuerpo del PATCH
+        const respuesta = await axios.patch(`${API_URL}/${clienteActualId}/sumar-puntos`, {
+            usuarioId: baristaId 
+        });
+        
         document.getElementById('displayPuntos').innerText = respuesta.data.puntosTotales || respuesta.data.puntos;
         alert("¡Punto sumado con éxito!");
     } catch (err) {
@@ -218,7 +241,6 @@ document.getElementById('btnSumarPunto').addEventListener('click', async () => {
     }
 });
 
-// 3. REGISTRAR NUEVO (POST)
 document.getElementById('btnRegistrar').addEventListener('click', async (e) => {
     e.preventDefault(); 
     e.stopImmediatePropagation();
@@ -229,7 +251,7 @@ document.getElementById('btnRegistrar').addEventListener('click', async (e) => {
     const correo = document.getElementById('correo') ? document.getElementById('correo').value.trim() : '';
     const fechaInput = document.getElementById('fecha_nacimiento').value;
     const checkboxMarketing = document.getElementById('acepta_marketing');
-    const acepta_marketing = checkboxMarketing ? checkboxMarketing.checked : false; // 💡 NUEVO
+    const acepta_marketing = checkboxMarketing ? checkboxMarketing.checked : false;
 
     if (!validarDatosFormulario(nombre, apellido, celular, correo, fechaInput)) return;
 
@@ -252,14 +274,12 @@ document.getElementById('btnRegistrar').addEventListener('click', async (e) => {
     }
 });
 
-// ✏️ BOTÓN EDITAR
 document.getElementById('btnEditar').addEventListener('click', (e) => {
     e.preventDefault();
     bloquearInputs(false); 
     gestionarBotonesFormulario('edicion');
 });
 
-// 💾 4. GUARDAR CAMBIOS EDITADOS (PUT)
 document.getElementById('btnGuardarCambios').addEventListener('click', async (e) => {
     e.preventDefault(); 
     e.stopImmediatePropagation();
@@ -271,11 +291,11 @@ document.getElementById('btnGuardarCambios').addEventListener('click', async (e)
     const correo = document.getElementById('correo') ? document.getElementById('correo').value.trim() : '';
     const fechaInput = document.getElementById('fecha_nacimiento').value;
     const checkboxMarketing = document.getElementById('acepta_marketing');
-    const acepta_marketing = checkboxMarketing ? checkboxMarketing.checked : false; // 💡 NUEVO
+    const acepta_marketing = checkboxMarketing ? checkboxMarketing.checked : false;
 
     if (!validarDatosFormulario(nombre, apellido, celular, correo, fechaInput)) return;
 
-    const datosActualizados = { nombre, apellido, celular, correo: correo || null, fecha_nacimiento: fechaInput || null, acepta_marketing };
+    const datosActualizados = { nombre, apellido, cellular, correo: correo || null, fecha_nacimiento: fechaInput || null, acepta_marketing };
     try {
         const respuesta = await axios.put(`${API_URL}/${clienteActualId}`, datosActualizados);
         alert("¡Datos del cliente corregidos con éxito!");
@@ -294,7 +314,6 @@ document.getElementById('btnGuardarCambios').addEventListener('click', async (e)
     }
 });
 
-// BUSCAR MANUAL - Toma en cuenta el valor que haya escrito
 document.getElementById('btnBuscar').addEventListener('click', (e) => {
     e.preventDefault();
     const nombreVal = document.getElementById('nombre').value.trim();
@@ -312,12 +331,11 @@ function limpiarFormulario() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(i => {
         if (i.id !== 'btnAbrirCamara') {
-            if (i.type === 'checkbox') i.checked = false; // 💡 Limpiar el checkbox
+            if (i.type === 'checkbox') i.checked = false; 
             else i.value = '';
         }
     });
     
-    // Ocultar textos de promos y cumple si existen
     const contenedorPromo = document.getElementById('promoDiaDisplay');
     if (contenedorPromo) contenedorPromo.innerText = '';
     const contenedorCumple = document.getElementById('mensajeCumpleDisplay');

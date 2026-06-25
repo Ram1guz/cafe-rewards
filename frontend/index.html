@@ -1,100 +1,117 @@
 <!DOCTYPE html>
-<html lang="es" trasnlate="no" class="notranslate"> 
+<html lang="es" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Café Rewards - Barista App</title>
+    <title>Café Rewards - Administrador</title>
     <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
-    <!-- Librería para leer QR -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="style.css">
-   <style>
-        /* 📷 La marca sobresale: la hacemos más grande e importante */
-        .brand-logo {
-            display: block;
-            margin: 0 auto 5px auto;
-            height: 140px; /* Subimos de 90px a 140px para que tenga gran presencia */
-            width: auto;
-            object-fit: contain;
-        }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .admin-menu { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .btn-menu { flex: 1; background-color: #e2e8f0; color: #18405c; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-menu.active { background-color: #18405c; color: white; }
+        .seccion-admin { display: none; }
+        .seccion-admin.active { display: block; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #18405c; color: white; }
+        
+        .btn-print { background-color: #4a5568; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        
+        /* 📜 CARTEL PARA EL MOSTRADOR */
+        .cartel-mostrador { background: white; border: 3px double #18405c; border-radius: 12px; padding: 30px; text-align: center; max-width: 320px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .cartel-qr { display: flex; justify-content: center; margin: 20px 0; }
 
-        /* ☕ 'Café Rewards' pasa a ser el subtítulo de apoyo, más sutil y estilizado */
-        .brand-name {
-            font-size: 1.5rem !important; /* Reducimos el tamaño del texto */
-            letter-spacing: 1px; /* Le da un toque más aireado y sofisticado */
-            margin-top: 0px;
-            margin-bottom: 2px;
+        /* 🖨️ REGLAS ESTRICTAS DE IMPRESIÓN */
+        @media print {
+            body { background: white; color: black; }
+            .admin-menu, header, #btnCerrarSesion, form, .btn-print, td:last-child, th:last-child { display: none !important; }
+            .card { border: none; box-shadow: none; background: transparent; padding: 0; margin: 0; }
+            .seccion-admin { display: none !important; }
+            .seccion-admin.active { display: block !important; }
+            table { width: 100%; font-size: 14px; }
+            th { background-color: #000 !important; color: #fff !important; }
+            /* Si imprimimos el cartel, que solo salga eso */
+            .cartel-imprimible { display: block !important; position: absolute; top: 0; left: 0; width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <!-- 📷 AQUÍ ESTÁ TU LOGO -->
-            <img src="logo.png" alt="Logo Cafetería" class="brand-logo">
-            <h1 class="brand-name" style="font-family: 'Parisienne', cursive;">Café Rewards</h1>
-            <p>Panel del Barista</p>
+    <div class="app-container" style="padding-top: 10px;">
+        
+        <header style="margin-bottom: 10px;">
+            <img src="logo.png" alt="Logo Cafetería" class="brand-logo" style="display: block; margin: 0 auto; height: 110px; width: auto; object-fit: contain;">
+            <h1 style="font-family: 'Parisienne', cursive; font-size: 2.6rem; color: #18405c; margin-top: -5px; margin-bottom: 0;">Café Rewards</h1>
+            <p style="margin-top: 0; margin-bottom: 5px; color: #ffffff; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Panel de Control Administrativo</p>
+            <div id="saludoAdmin" style="color: #ffffff !important; font-size: 14px; font-weight: bold; margin-top: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Cargando...</div>
         </header>
 
-        <!-- SECCIÓN 1: ESCÁNER QR -->
-        <div class="card">
-            <button id="btnAbrirCamara" class="btn-registrar" style="font-size: 16px; margin-bottom: 10px;">
-                📷 ESCANEAR QR CLIENTE
-            </button>
-            <div id="reader" class="hidden" style="width: 100%; border-radius: 15px;"></div>
+        <div class="admin-menu">
+            <button class="btn-menu active" onclick="cambiarSeccion('campana')">⚙️ Campaña</button>
+            <button class="btn-menu" onclick="cambiarSeccion('baristas')">👥 Baristas</button>
+            <button class="btn-menu" onclick="cambiarSeccion('reportes')">📊 Reportes</button>
+            <button class="btn-menu" onclick="cambiarSeccion('qr-mostrador')">📲 QR Mostrador</button>
         </div>
 
-        <!-- SECCIÓN 2: RESULTADO Y PUNTOS -->
-<div id="puntosContenedor" class="points-section hidden">
-    <h2 id="nombreCliente" style="color: #5d4037; margin-bottom: 5px;">Cliente</h2>
-    <p id="infoAdicional" style="font-size: 12px; color: #888; margin-bottom: 5px;"></p>
-    
-    <!-- 🎁 MENSAJE DE CUMPLEAÑOS -->
-    <div id="mensajeCumpleDisplay" class="hidden" style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; font-weight: bold; border: 1px dashed #ffeeba;"></div>
-    
-    <div id="displayPuntos" class="points-number">0</div>
-    
-    <!-- ☕ PROMO DEL DÍA -->
-    <p style="font-size: 12px; font-weight: bold; color: #18405c; margin-top: 5px;">Promoción disponible:</p>
-    <div id="promoDiaDisplay" style="font-style: italic; color: #555; margin-bottom: 15px; font-size: 13px;">Ninguna</div>
-
-    <div class="button-row">
-        <button id="btnSumarPunto" class="btn-registrar" style="background-color: #28a745;">+1 PUNTO</button>
-    </div>
-    <button id="btnCerrarPerfil" class="btn-limpiar">Cerrar Perfil</button>
-</div>
-
-        <!-- SECCIÓN 3: REGISTRO / BÚSQUEDA MANUAL -->
-        <div class="card" id="seccionManual">
-            <h2 style="font-size: 14px;">Búsqueda o Registro Manual</h2>
-            <input type="text" id="nombre" placeholder="Nombre (Obligatorio)">
-            <input type="text" id="apellido" placeholder="Apellido (Obligatorio)">
-            <input type="number" id="celular" placeholder="Celular (Número Entero Obligatorio)" inputmode="numeric" pattern="[0-9]*">
-            <input type="email" id="correo" placeholder="Correo Electrónico (Opcional - ej: nombre@mail.com)">
-
-            <div style="text-align: left; margin-bottom: 10px;">
-                <label style="font-size: 10px; color: #18405c; margin-left: 5px;">Fecha Nacimiento (Opcional)</label>
-                <input type="date" id="fecha_nacimiento" min="1950-01-01">
-                <div style="text-align: left; margin-bottom: 10px; margin-left: 5px;">
-    <input type="checkbox" id="acepta_marketing" style="width: auto; margin-right: 5px;">
-    <label for="acepta_marketing" style="font-size: 11px; color: #18405c; cursor: pointer;">Acepta recibir ofertas y marketing por correo</label>
-</div>
-            </div>
-
-            <div class="button-row" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                <button id="btnBuscar" class="btn-buscar notraslate" traslate=no style="flex: 1; min-width: 100px;">BUSCAR</button>
-                <button id="btnRegistrar" class="btn-registrar" style="flex: 1; min-width: 140px;">REGISTRAR NUEVO</button>
-                <button id="btnEditar" class="btn-buscar" style="background-color: #6c757d; color: white; display: none; flex: 1; min-width: 100px;">✏️ EDITAR</button>
-                <button id="btnGuardarCambios" class="btn-registrar" style="background-color: #ff9800; display: none; flex: 1; min-width: 140px;">💾 GUARDAR</button>
-            </div>
-            <button id="btnLimpiar" class="btn-limpiar">Limpiar Todo</button>
+        <div id="sec-campana" class="card seccion-admin active" style="padding: 15px;">
+            <h2 style="font-size: 15px; color: #18405c; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">⚙️ Configurar Campaña Activa</h2>
+            <form id="formAdmin">
+                <div style="text-align: left; margin-bottom: 12px;"><label style="font-size: 12px; font-weight: bold; color: #18405c;">📢 Promoción del Día:</label><input type="text" id="promo_del_dia" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;"></div>
+                <div style="text-align: left; margin-bottom: 12px;"><label style="font-size: 12px; font-weight: bold; color: #18405c;">🎁 Regalo de Cumpleaños:</label><input type="text" id="cumple_regalo_desc" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;"></div>
+                <div style="text-align: left; margin-bottom: 12px;"><label style="font-size: 12px; font-weight: bold; color: #18405c;">⏳ Validez (Días):</label><input type="number" id="cumple_plazo_dias" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;"></div>
+                <div style="text-align: left; margin-bottom: 15px;"><label style="font-size: 12px; font-weight: bold; color: #18405c;">⭐ Puntos Requeridos:</label><input type="number" id="cumple_puntos_bono" style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;"></div>
+                <button type="submit" class="btn-registrar" style="width: 100%; background-color: #18405c;">💾 GUARDAR CONFIGURACIÓN</button>
+            </form>
         </div>
+
+        <div id="sec-baristas" class="card seccion-admin" style="padding: 15px;">
+            <h2 style="font-size: 15px; color: #18405c; margin-top:0;">👥 Registro de Baristas</h2>
+            <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR LISTA</button>
+            <form id="formBarista" style="margin-bottom: 20px;">
+                <input type="hidden" id="barista_id">
+                <input type="text" id="barista_nombre" placeholder="Nombre completo" required style="width: 100%; padding: 8px; margin-bottom:8px; border-radius:8px; border:1px solid #ccc;">
+                <input type="text" id="barista_pin" placeholder="PIN (4 dígitos)" required maxlength="4" style="width: 100%; padding: 8px; margin-bottom:8px; border-radius:8px; border:1px solid #ccc;">
+                <button type="submit" id="btnGuardarBarista" class="btn-registrar" style="width: 100%; background-color: #28a745;">➕ REGISTRAR BARISTA</button>
+                <button type="button" id="btnCancelarEdicion" class="btn-limpiar" style="display:none; margin-top:5px;">Cancelar Edición</button>
+            </form>
+            <table>
+                <thead><tr><th>Nombre</th><th>PIN</th><th>Acciones</th></tr></thead>
+                <tbody id="tablaBaristas"></tbody>
+            </table>
+        </div>
+
+        <div id="sec-reportes" class="card seccion-admin" style="padding: 15px;">
+            <h2 style="font-size: 15px; color: #18405c; margin-top:0;">📊 Reporte Global de Clientes</h2>
+            <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR REPORTE</button>
+            <table>
+                <thead><tr><th>Cliente</th><th>Celular</th><th>Puntos</th></tr></thead>
+                <tbody id="tablaClientesReporte"></tbody>
+            </table>
+        </div>
+
+        <div id="sec-qr-mostrador" class="card seccion-admin" style="padding: 15px;">
+            <h2 style="font-size: 15px; color: #18405c; margin-top: 0; text-align:center;">📲 Generar Letrero para el Mostrador</h2>
+            <p style="font-size:12px; text-align:center; color:#666;">Haz clic abajo para mandar a la impresora el letrero del negocio.</p>
+            <button class="btn-print" style="width:100%; background-color:#10b981;" onclick="window.print()">🖨️ IMPRIMIR CARTEL ACENTUADO</button>
+            
+            <div class="cartel-mostrador cartel-imprimible">
+                <h2 style="font-family: 'Parisienne', cursive; font-size: 2.8rem; color: #18405c; margin: 0;">Jacaqu Café</h2>
+                <p style="font-size: 14px; font-weight: bold; color: #555; margin: 5px 0 15px 0;">✨ CLUB DE RECOMPENSAS ✨</p>
+                <p style="font-size: 12px; color: #333; padding: 0 10px;">Escanea este código con tu celular para consultar tus puntos o registrarte en segundos.</p>
+                
+                <div class="cartel-qr">
+                    <div id="qrcodeContenedor"></div>
+                </div>
+                
+                <p style="font-size: 13px; font-weight: bold; color: #18405c; margin: 0;">¡Cada taza te acerca a un regalo!</p>
+            </div>
+        </div>
+
+        <button id="btnCerrarSesion" class="btn-limpiar" style="background-color: #dc2626; color: white; margin-top: 15px; width: 100%;">🔒 Cerrar Sesión Admin</button>
     </div>
 
-    <!-- 1. LIBRERÍA DE AXIOS (Añadida para conectar con la API) -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-    <!-- 2. TU LÓGICA DE NEGOCIO -->
-    <script src="app.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>

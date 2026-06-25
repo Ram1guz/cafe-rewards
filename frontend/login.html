@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jacaqu Café - Acceso Personal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-container {
+            max-width: 360px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 20px;
+        }
+        .pin-display {
+            font-size: 32px;
+            letter-spacing: 15px;
+            margin: 20px 0;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border: 2px solid #18405c;
+            min-height: 48px;
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .key {
+            background: #18405c;
+            color: white;
+            font-size: 24px;
+            padding: 20px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .key:active {
+            background: #0f2a3f;
+        }
+        .key.clear {
+            background: #dc2626;
+        }
+        .key.clear:active {
+            background: #991b1b;
+        }
+        .error-msg {
+            color: #dc2626;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <img src="logo.png" alt="Jacaqu Café Logo" style="max-width: 120px;">
+        <h2 style="color: #18405c; margin-top: 10px;">Acceso Autorizado</h2>
+        <p>Digita tu PIN de 4 dígitos</p>
+
+        <div id="pinDisplay" class="pin-display"></div>
+        
+        <div id="errorMsg" class="error-msg"></div>
+
+        <div class="keyboard">
+            <button class="key" onclick="agregarNumero('1')">1</button>
+            <button class="key" onclick="agregarNumero('2')">2</button>
+            <button class="key" onclick="agregarNumero('3')">3</button>
+            
+            <button class="key" onclick="agregarNumero('4')">4</button>
+            <button class="key" onclick="agregarNumero('5')">5</button>
+            <button class="key" onclick="agregarNumero('6')">6</button>
+            
+            <button class="key" onclick="agregarNumero('7')">7</button>
+            <button class="key" onclick="agregarNumero('8')">8</button>
+            <button class="key" onclick="agregarNumero('9')">9</button>
+            
+            <button class="key clear" onclick="limpiarPin()">C</button>
+            <button class="key" onclick="agregarNumero('0')">0</button>
+            <button class="key" style="background:#10b981;" onclick="enviarPin()">✓</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

@@ -30,7 +30,7 @@ model Cliente {
   fecha_nacimiento DateTime?
   puntos           Int           @default(0)
   fecha_registro   DateTime      @default(now())
-  transacciones    Transaccion[] // 💡 SOLUCIÓN 1: Añadimos la relación inversa para que no dé error
+  transacciones    Transaccion[]
 
   @@map("clientes")
 }
@@ -56,12 +56,14 @@ model Producto {
 
 model Usuario {
   id            Int           @id @default(autoincrement())
-  username      String        @unique
-  password      String
+  nombre        String        @db.VarChar(50)
+  pin           String        @unique // 🔐 El PIN de 4 dígitos para login rápido en el mostrador
   rol           String // "ADMIN" o "BARISTA"
+  activo        Boolean       @default(true)
   sucursalId    Int?
   sucursal      Sucursal?     @relation(fields: [sucursalId], references: [id])
-  transacciones Transaccion[] // 💡 SOLUCIÓN 2: Añadimos las transacciones que procesa este usuario
+  transacciones Transaccion[] // Las transacciones que procesa este usuario (barista)
+  createdAt     DateTime      @default(now())
 
   @@map("usuarios")
 }
@@ -77,7 +79,7 @@ model Transaccion {
 
   cliente  Cliente  @relation(fields: [clienteId], references: [id])
   sucursal Sucursal @relation(fields: [sucursalId], references: [id])
-  usuario  Usuario  @relation(fields: [usuarioId], references: [id]) // 💡 SOLUCIÓN 3: Creamos la relación física con Usuario
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
 
   @@map("transacciones")
 }
