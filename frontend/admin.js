@@ -258,3 +258,5 @@ function generarQrMostrador() {
         });
     }, 60); 
 }
+
+

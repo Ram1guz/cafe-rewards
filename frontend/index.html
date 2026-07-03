@@ -54,6 +54,33 @@
             <button class="btn-menu" onclick="cambiarSeccion('qr-mostrador')">📲 QR Mostrador</button>
         </div>
 
+        <!-- ☕ MOSTRADOR OPERATIVO DEL BARISTA (SE ACTIVA DINÁMICAMENTE) -->
+<div id="sec-mostrador-barista" class="card" style="padding: 15px; display: none; margin-bottom: 15px;">
+    <h2 style="font-size: 15px; color: #18405c; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">☕ Mostrador de Atención</h2>
+    
+    <!-- Buscador -->
+    <div style="margin-bottom: 15px;">
+        <label style="font-size: 12px; font-weight: bold; color: #18405c;">🔍 Buscar Cliente (Nombre o Celular):</label>
+        <div style="display: flex; gap: 8px; margin-top: 5px;">
+            <input type="text" id="inputBuscarCliente" placeholder="Ej: Ramiro o 777..." style="flex: 1; padding: 8px; border-radius:8px; border:1px solid #ccc;">
+            <button type="button" class="btn-menu" id="btnBuscarCliente" style="flex: none; width: auto; padding: 0 15px; background-color: #18405c; color: white;" onclick="buscarClientesMostrador()">Buscar</button>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div id="resultadosBusqueda" style="margin-bottom: 15px; font-size: 13px;"></div>
+
+    <!-- Registro Rápido por si el cliente no existe -->
+    <details style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+        <summary style="font-size: 12px; font-weight: bold; color: #18405c; cursor: pointer;">➕ Registrar Cliente Nuevo</summary>
+        <form id="formRegistroRapido" style="margin-top: 10px;">
+            <input type="text" id="reg_nombre" placeholder="Nombre" required style="width: 100%; padding: 8px; margin-bottom:8px; border-radius:8px; border:1px solid #ccc; font-size:12px;">
+            <input type="text" id="reg_apellido" placeholder="Apellido" required style="width: 100%; padding: 8px; margin-bottom:8px; border-radius:8px; border:1px solid #ccc; font-size:12px;">
+            <input type="text" id="reg_celular" placeholder="Celular (opcional)" style="width: 100%; padding: 8px; margin-bottom:8px; border-radius:8px; border:1px solid #ccc; font-size:12px;">
+            <button type="submit" class="btn-registrar" style="width: 100%; background-color: #28a745; font-size:12px; padding: 8px;">💾 REGISTRAR E INICIAR</button>
+        </form>
+    </details>
+</div>
         <div id="sec-campana" class="card seccion-admin active" style="padding: 15px;">
             <h2 style="font-size: 15px; color: #18405c; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">⚙️ Configurar Campaña Activa</h2>
             <form id="formAdmin">

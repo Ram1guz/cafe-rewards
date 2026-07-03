@@ -1,45 +1,47 @@
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import bcrypt from 'bcrypt';
 
-// ... el resto de tu función main() ...
-import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Insertando usuarios de prueba...');
+  console.log('🌱 Inicializando usuarios seguros en la base de datos...');
 
-  // 1. Crear un Administrador con PIN "9999"
+  // Encriptamos los PINs de fábrica antes de pasarlos a la base de datos
+  const pinAdminEncriptado = await bcrypt.hash('9999', 10);
+  const pinBaristaEncriptado = await bcrypt.hash('1234', 10);
+
+  // 1. Crear o mantener al Administrador
   const admin = await prisma.usuario.upsert({
-    where: { pin: '9999' },
+    where: { pin: '9999' }, // Nota: si cambias el PIN en producción, el upsert evaluará el nuevo
     update: {},
     create: {
       nombre: 'Ramiro Admin',
-      pin: '9999',
+      pin: pinAdminEncriptado, // Ahora guardado de forma segura
       rol: 'ADMIN',
       activo: true
     },
   });
 
-  // 2. Crear un Barista con PIN "1234"
+  // 2. Crear o mantener al Barista
   const barista = await prisma.usuario.upsert({
     where: { pin: '1234' },
     update: {},
     create: {
       nombre: 'Carlos Barista',
-      pin: '1234',
+      pin: pinBaristaEncriptado, // Ahora guardado de forma segura
       rol: 'BARISTA',
       activo: true
     },
   });
 
-  console.log('✅ Usuarios creados con éxito:');
-  console.log(` - ${admin.nombre} (Rol: ${admin.rol}, PIN: ${admin.pin})`);
-  console.log(` - ${barista.nombre} (Rol: ${barista.rol}, PIN: ${barista.pin})`);
+  console.log('✅ Usuarios de fábrica inicializados con éxito con seguridad Bcrypt.');
+  console.log(` - ${admin.nombre} (Rol: ${admin.rol})`);
+  console.log(` - ${barista.nombre} (Rol: ${barista.rol})`);
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Error en el proceso de seed:', e);
     process.exit(1);
   })
   .finally(async () => {

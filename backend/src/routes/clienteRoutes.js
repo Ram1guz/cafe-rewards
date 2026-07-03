@@ -244,6 +244,21 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
       orderBy: { id: 'desc' }
     });
 
+    // 🎂 --- CÁLCULO REAL DE CUMPLEAÑOS ---
+    let esHoySuCumple = false;
+    let mensajeCumple = null;
+
+    if (cliente.fecha_nacimiento) {
+      const hoy = new Date();
+      const cumple = new Date(cliente.fecha_nacimiento);
+      
+      // Comparamos el día y el mes (sumamos 1 al mes porque JavaScript cuenta de 0 a 11)
+      if (hoy.getDate() === cumple.getUTCDate() && (hoy.getMonth() + 1) === (cumple.getUTCMonth() + 1)) {
+        esHoySuCumple = true;
+        mensajeCumple = `🎉 ¡Felicidades, ${cliente.nombre}! ${config?.cumple_regalo_desc || '¡Un café de cortesía!'} Reclámalo en caja.`;
+      }
+    }
+
     res.json({
       cliente: {
         id: cliente.id,
@@ -252,8 +267,8 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
       },
       promocionDelDia: config?.promo_del_dia || '¡Bienvenidos a Café Rewards!',
       cumpleanos: {
-        esHoy: false,
-        mensajeEspecial: null
+        esHoy: esHoySuCumple,
+        mensajeEspecial: mensajeCumple
       }
     });
   } catch (error) {
@@ -261,5 +276,3 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor al obtener panel de fidelidad.' });
   }
 });
-
-export default router;

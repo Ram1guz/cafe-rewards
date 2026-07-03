@@ -57,8 +57,13 @@ function generarQrClienteId(clienteId) {
     contenedor.innerHTML = ""; 
 
     try {
-        // 🚀 Genera la imagen del QR directo usando la API ultra-estable con tu azul (#18405c)
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${clienteId}&color=18405c`;
+        // 🚀 MEJORA DE INTEGRACIÓN: Codificamos la URL completa del cliente.
+        // De esta forma, cuando el mostrador (barista.js) escanee el código,
+        // podrá extraer el ID de los parámetros con total precisión matemática.
+        const textoQr = `${window.location.origin}/cliente?id=${clienteId}`;
+        
+        // Genera la imagen del QR directo usando tu azul (#18405c)
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(textoQr)}&color=18405c`;
         
         // Creamos la etiqueta <img> nativa
         const imgQr = document.createElement("img");
@@ -71,7 +76,7 @@ function generarQrClienteId(clienteId) {
         
         // Inyectamos la imagen en la caja blanca
         contenedor.appendChild(imgQr);
-        console.log(`✅ Código QR por imagen inyectado con éxito para ID: ${clienteId}`);
+        console.log(`✅ Código QR unificado inyectado con éxito para ID: ${clienteId}`);
 
     } catch (err) {
         console.error("❌ Error al renderizar el QR por imagen:", err);
