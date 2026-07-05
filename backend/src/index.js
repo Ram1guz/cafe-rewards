@@ -52,6 +52,52 @@ app.use('/clientes', clienteRoutes);
 app.use('/baristas', baristaRoutes);
 app.use('/api/auth', authRoutes);
 
+// 🧪 RUTA DE PRUEBA DE CORREOS (localhost:3000/mail-test)
+app.get('/mail-test', async (req, res) => {
+  try {
+    // Importamos tus módulos de servicio
+    const { enviarCorreo } = await import('./services/correoService.js');
+    const { obtenerPlantillaCumpleanos } = await import('./services/plantillasCorreo.js');
+    const { default: prisma } = await import('./prisma.js');
+
+    // Buscamos al usuario "Ramiro" que registraste con tu correo real
+    const cliente = await prisma.cliente.findFirst({
+      where: { correo: 'ramiguz@gmail.com' }
+    });
+
+    if (!cliente) {
+      return res.status(404).send("❌ No se encontró ningún cliente con el correo ramiguz@gmail.com en la base de datos. Regístralo primero desde /barista.");
+    }
+
+    // Generamos la hermosa plantilla corporativa Azul #18405c usando sus datos reales
+    const htmlPrueba = obtenerPlantillaCumpleanos(
+      cliente.nombre, 
+      "Un Café de Cortesía por tu Cumpleaños ☕", 
+      "10/07/2026"
+    );
+
+    // Disparamos el correo real a través de Gmail
+    console.log(`⏳ Intentando enviar correo de prueba a ${cliente.correo}...`);
+    const exito = await enviarCorreo(cliente.correo, "🎉 ¡Feliz Cumpleaños en Jacaqu Café! ☕", htmlPrueba);
+
+    if (exito) {
+      return res.send(`
+        <div style="font-family: sans-serif; text-align: center; padding: 40px; color: #18405c;">
+          <h2>✅ ¡Prueba de correo enviada con éxito!</h2>
+          <p>Se despachó la plantilla de cumpleaños a: <strong>${cliente.correo}</strong></p>
+          <p>Revisa tu bandeja de entrada (o la carpeta de Spam) y la consola de Ubuntu.</p>
+        </div>
+      `);
+    } else {
+      return res.status(500).send("❌ Nodemailer devolvió falso. Revisa los logs de la terminal para ver el error de SMTP.");
+    }
+
+  } catch (error) {
+    console.error("❌ Error en el test de correo:", error);
+    return res.status(500).send("❌ Error al procesar el envío de prueba: " + error.message);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor listo y escuchando en el puerto ${PORT}`);
 });

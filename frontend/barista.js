@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnEditar').addEventListener('click', habilitarEdicion);
     document.getElementById('btnGuardarCambios').addEventListener('click', guardarCambiosCliente);
     document.getElementById('btnSumarPunto').addEventListener('click', sumarPuntoCliente);
+    document.getElementById('btnCanjearPremio').addEventListener('click', canjearPremioCliente);
     document.getElementById('btnCerrarPerfil').addEventListener('click', cerrarPerfilCliente);
     document.getElementById('btnLimpiar').addEventListener('click', limpiarFormulario);
 
@@ -295,4 +296,39 @@ function limpiarFormulario() {
     if (fecha) fecha.value = "";
     const mkt = document.getElementById("acepta_marketing");
     if (mkt) mkt.checked = false;
+}
+async function canjearPremioCliente() {
+    if (!clienteSeleccionadoId) return alert("⚠️ Primero debes escanear o buscar a un cliente.");
+
+    // Confirmación de seguridad para el barista
+    const confirmar = confirm("¿Estás seguro de entregar el premio y descontar los puntos de este cliente?");
+    if (!confirmar) return;
+
+    // Recuperamos el ID del barista activo para la auditoría de Postgres
+    const baristaId = localStorage.getItem("usuarioId");
+
+    try {
+        // Tu ruta del backend espera 'productoId' y 'usuarioId' en el req.body
+        // Como el premio es dinámico según la configuración del admin, pasamos productoId: 1 
+        // (o el ID por defecto que manejes para el premio global del MVP)
+        const respuesta = await axios.post(`/clientes/${clienteSeleccionadoId}/recompensa`, {
+            productoId: 1, 
+            usuarioId: baristaId ? parseInt(baristaId, 10) : null
+        });
+
+        // ¡Éxito! Mostramos el mensaje personalizado que viene del backend
+        alert(`🎁 ${respuesta.data.mensaje}`);
+        
+        // Recargamos el perfil para que el display de puntos se actualice en tiempo real
+        cargarPerfilCliente(clienteSeleccionadoId);
+
+    } catch (error) {
+        console.error("❌ Error al procesar el canje:", error);
+        // Si el backend responde con 400 (Puntos insuficientes), capturamos el mensaje exacto
+        if (error.response && error.response.data && error.response.data.error) {
+            alert(`⚠️ No se pudo realizar el canje: ${error.response.data.error}`);
+        } else {
+            alert("❌ Ocurrió un error al conectar con el servidor para aplicar el premio.");
+        }
+    }
 }

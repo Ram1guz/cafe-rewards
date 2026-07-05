@@ -276,3 +276,4 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor al obtener panel de fidelidad.' });
   }
 });
+export default router;
