@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaqaku Café - Registro de Clientes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .brand-logo {
+            display: block;
+            margin: 0 auto 5px auto;
+            height: 140px; 
+            width: auto;
+            object-fit: contain;
+        }
+        .brand-name {
+            font-size: 2.2rem; 
+            color: #18405c;
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+        .hidden { display: none !important; }
+        
+        /* Ajuste específico para el contenedor del código QR final */
+        .qr-success-container {
+            background: #f4f7f6;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #18405c;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        /* 🎯 Contenedor centrado para el código QR unificado */
+        .cartel-qr {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        #qrcodeContenedor {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <img src="logo.png" alt="Jaqaku Café Logo" class="brand-logo">
+            <h1 class="brand-name" style="font-family: 'Parisienne', cursive;">Jaqaku Café</h1>
+            <p style="color: #18405c; font-weight: bold; margin-bottom: 20px;">Únete a nuestro Club de Fidelidad</p>
+        </header>
+
+        <div class="card" id="formularioRegistroCard">
+            <h2 style="font-size: 16px; color: #18405c; margin-bottom: 15px;">Ingresa tus Datos para Registrarte</h2>
+            
+            <input type="text" id="nombre" placeholder="Nombre (Obligatorio)">
+            <input type="text" id="apellido" placeholder="Apellido (Obligatorio)">
+            <input type="number" id="celular" placeholder="Celular (Número Entero Obligatorio)" inputmode="numeric" pattern="[0-9]*">
+            <input type="email" id="correo" placeholder="Correo Electrónico (Opcional - ej: nombre@mail.com)">
+
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label style="font-size: 11px; color: #18405c; margin-left: 5px; font-weight: bold;">Fecha de Nacimiento (Opcional)</label>
+                <input type="date" id="fecha_nacimiento" min="1950-01-01">
+                
+                <div style="text-align: left; margin-bottom: 10px; margin-left: 5px; margin-top: 10px;">
+                    <input type="checkbox" id="acepta_marketing" style="width: auto; margin-right: 5px; transform: scale(1.1); cursor: pointer;">
+                    <label for="acepta_marketing" style="font-size: 12px; color: #18405c; cursor: pointer;">Acepta recibir ofertas y marketing por correo</label>
+                </div>
+            </div>
+
+            <button id="btnRegistrarCliente" class="btn-registrar" style="width: 100%; font-size: 16px; padding: 12px; margin-top: 10px;">
+                🎉 CREAR MI TARJETA DIGITAL
+            </button>
+        </div>
+
+        <div class="card hidden" id="seccionExitoCard">
+            <div class="qr-success-container">
+                <h2 style="color: #28a745; font-size: 18px; margin-bottom: 5px;">¡Registro Exitoso! ✅</h2>
+                <p style="font-size: 13px; color: #555;">Aquí tienes tu tarjeta digital de puntos. Toma una captura de pantalla y muéstrala al barista en tu próxima visita.</p>
+                
+                <div class="cartel-qr">
+                    <div id="qrcodeContenedor"></div>
+                </div>
+                
+                <h3 id="txtClienteNombre" style="color: #18405c; font-family: 'Parisienne', cursive; font-size: 1.8rem; margin: 10px 0 0 0;"></h3>
+                <p id="txtClienteCelular" style="font-size: 12px; color: #888; font-weight: bold;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script src="registro.js"></script>
+</body>
+</html>

@@ -75,7 +75,6 @@ function onScanSuccess(decodedText) {
     apagarCamara();
     
     try {
-        // Analizamos el texto escaneado como una URL para extraer el id (?id=1)
         const urlObj = new URL(decodedText);
         const idExtraido = urlObj.searchParams.get("id");
         
@@ -83,7 +82,6 @@ function onScanSuccess(decodedText) {
             console.log(`🎯 QR Escaneado con éxito. ID de Cliente detectado: ${idExtraido}`);
             cargarPerfilCliente(idExtraido);
         } else {
-            // Salvavidas por si escanean un QR antiguo que solo contenía el número de ID pelado
             if (!isNaN(decodedText) && decodedText.trim() !== "") {
                 cargarPerfilCliente(decodedText.trim());
             } else {
@@ -91,7 +89,6 @@ function onScanSuccess(decodedText) {
             }
         }
     } catch (err) {
-        // Fallback: si el texto no es una URL, verificamos si es un ID numérico plano directo
         if (!isNaN(decodedText) && decodedText.trim() !== "") {
             cargarPerfilCliente(decodedText.trim());
         } else {
@@ -108,7 +105,6 @@ async function buscarClienteManual() {
     const apellido = document.getElementById("apellido").value.trim().toLowerCase();
     const celular = document.getElementById("celular").value.trim();
 
-    // 🚨 REGLA DE ORO: Nombre+Apellido O Celular obligatorio
     const tieneNombreCompleto = nombre && apellido;
     const tieneCelular = celular !== "";
 
@@ -169,11 +165,16 @@ async function cargarPerfilCliente(id) {
         const respuesta = await axios.get(`/clientes/${id}/panel-fidelidad`);
         const datos = respuesta.data;
 
-        if (datos) {
+        if (datos && datos.cliente) {
+            const c = datos.cliente;
+
             // 1. Pintar sección superior de puntos
-            document.getElementById("nombreCliente").innerText = `👤 ${datos.cliente.nombreCompleto}`;
-            document.getElementById("infoAdicional").innerText = `📱 Celular: ${datos.cliente.celular || 'Sin número'}`;
-            document.getElementById("displayPuntos").innerText = datos.cliente.puntosActuales;
+            document.getElementById("nombreCliente").innerText = `👤 ${c.nombreCompleto || (c.nombre + ' ' + c.apellido)}`;
+            
+            // 🛠️ FIX CELULAR: Aseguramos que use el valor limpio de la respuesta de la BD
+            document.getElementById("infoAdicional").innerText = `📱 Celular: ${c.celular ? c.celular : 'Sin número'}`;
+            
+            document.getElementById("displayPuntos").innerText = c.puntosActuales !== undefined ? c.puntosActuales : (c.puntos || 0);
             document.getElementById("promoDiaDisplay").innerText = datos.promocionDelDia || "Ninguna";
 
             // Mensaje Cumpleaños
@@ -186,21 +187,32 @@ async function cargarPerfilCliente(id) {
             }
 
             // 2. Rellenar el formulario manual con los datos reales encontrados
-            document.getElementById("nombre").value = datos.cliente.nombre || "";
-            document.getElementById("apellido").value = datos.cliente.apellido || "";
-            document.getElementById("celular").value = datos.cliente.celular || "";
-            document.getElementById("correo").value = datos.cliente.correo || "";
+            document.getElementById("nombre").value = c.nombre || "";
+            document.getElementById("apellido").value = c.apellido || "";
+            document.getElementById("celular").value = c.celular || "";
+            document.getElementById("correo").value = c.correo || "";
+            
+            // 🛠️ FIX CUMPLEANOS: Cargamos el input de fecha si viene en la respuesta
+            const fechaInput = document.getElementById("fecha_nacimiento");
+            if (fechaInput) {
+                if (c.fecha_nacimiento) {
+                    fechaInput.value = c.fecha_nacimiento.split('T')[0];
+                } else if (c.fecha_registro) {
+                    // Fallback preventivo
+                    fechaInput.value = "";
+                }
+            }
             
             // Bloqueamos los inputs inicialmente para que no se alteren sin querer
             bloquearCamposFormulario(true);
 
-            // 3. Control de visibilidad de botones (Ocultar buscar/registrar, mostrar editar)
+            // 3. Control de visibilidad de botones
             document.getElementById("btnBuscar").style.display = "none";
             document.getElementById("btnRegistrar").style.display = "none";
             document.getElementById("btnEditar").style.display = "inline-block";
             document.getElementById("btnGuardarCambios").style.display = "none";
 
-            // 🚨 SOLUCIÓN DEFINITIVA: Forzamos la visibilidad al navegador inyectando !important inline
+            // Forzamos la visibilidad al navegador inyectando !important inline
             document.getElementById("puntosContenedor").style.setProperty("display", "block", "important");
             document.getElementById("seccionManual").style.setProperty("display", "block", "important");
 
@@ -243,7 +255,6 @@ async function guardarCambiosCliente() {
 async function sumarPuntoCliente() {
     if (!clienteSeleccionadoId) return;
     
-    // Capturamos el ID dinámico del barista activo en la sesión para la auditoría de Postgres
     const baristaId = localStorage.getItem("usuarioId");
 
     try {
@@ -261,11 +272,9 @@ async function sumarPuntoCliente() {
 function cerrarPerfilCliente() {
     clienteSeleccionadoId = null;
     
-    // Ocultamos el bloque de puntos usando !important para no romper la interfaz
     document.getElementById("puntosContenedor").style.setProperty("display", "none", "important");
     document.getElementById("seccionManual").style.setProperty("display", "block", "important");
     
-    // Restaurar botones manuales originales (Corregido .style.style)
     document.getElementById("btnBuscar").style.display = "inline-block";
     document.getElementById("btnRegistrar").style.display = "inline-block";
     document.getElementById("btnEditar").style.display = "none";
@@ -278,7 +287,7 @@ function cerrarPerfilCliente() {
 // --- 🔧 UTILIDADES ---
 function bloquearCamposFormulario(bloquear) {
     document.getElementById("nombre").disabled = bloquear;
-    document.getElementById("apellido").disabled = disabled = bloquear;
+    document.getElementById("apellido").disabled = bloquear; // 🛠️ FIX: Se removió la doble asignación rota
     document.getElementById("celular").disabled = bloquear;
     document.getElementById("correo").disabled = bloquear;
     const fecha = document.getElementById("fecha_nacimiento");
@@ -297,34 +306,26 @@ function limpiarFormulario() {
     const mkt = document.getElementById("acepta_marketing");
     if (mkt) mkt.checked = false;
 }
+
 async function canjearPremioCliente() {
     if (!clienteSeleccionadoId) return alert("⚠️ Primero debes escanear o buscar a un cliente.");
 
-    // Confirmación de seguridad para el barista
     const confirmar = confirm("¿Estás seguro de entregar el premio y descontar los puntos de este cliente?");
     if (!confirmar) return;
 
-    // Recuperamos el ID del barista activo para la auditoría de Postgres
     const baristaId = localStorage.getItem("usuarioId");
 
     try {
-        // Tu ruta del backend espera 'productoId' y 'usuarioId' en el req.body
-        // Como el premio es dinámico según la configuración del admin, pasamos productoId: 1 
-        // (o el ID por defecto que manejes para el premio global del MVP)
         const respuesta = await axios.post(`/clientes/${clienteSeleccionadoId}/recompensa`, {
             productoId: 1, 
             usuarioId: baristaId ? parseInt(baristaId, 10) : null
         });
 
-        // ¡Éxito! Mostramos el mensaje personalizado que viene del backend
         alert(`🎁 ${respuesta.data.mensaje}`);
-        
-        // Recargamos el perfil para que el display de puntos se actualice en tiempo real
         cargarPerfilCliente(clienteSeleccionadoId);
 
     } catch (error) {
         console.error("❌ Error al procesar el canje:", error);
-        // Si el backend responde con 400 (Puntos insuficientes), capturamos el mensaje exacto
         if (error.response && error.response.data && error.response.data.error) {
             alert(`⚠️ No se pudo realizar el canje: ${error.response.data.error}`);
         } else {

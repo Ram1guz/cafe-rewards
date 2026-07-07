@@ -1,0 +1,1 @@
+[07/Jul/2026:14:39:14 +0000] - 404 404 - GET http 192.168.100.123 "/cliente.html?id=8" [Client 192.168.100.185] [Length 60] [Gzip -] [Sent-to localhost] "QR Scanner Android" "-"

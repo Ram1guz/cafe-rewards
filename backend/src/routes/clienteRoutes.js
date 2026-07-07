@@ -252,17 +252,23 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
       const hoy = new Date();
       const cumple = new Date(cliente.fecha_nacimiento);
       
-      // Comparamos el día y el mes (sumamos 1 al mes porque JavaScript cuenta de 0 a 11)
+      // Comparamos el día y el mes
       if (hoy.getDate() === cumple.getUTCDate() && (hoy.getMonth() + 1) === (cumple.getUTCMonth() + 1)) {
         esHoySuCumple = true;
         mensajeCumple = `🎉 ¡Felicidades, ${cliente.nombre}! ${config?.cumple_regalo_desc || '¡Un café de cortesía!'} Reclámalo en caja.`;
       }
     }
 
+    // 🚀 RESPUESTA ENRIQUECIDA COMPLETA PARA EL FRONTEND
     res.json({
       cliente: {
         id: cliente.id,
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
         nombreCompleto: `${cliente.nombre} ${cliente.apellido}`,
+        celular: cliente.celular,
+        correo: cliente.correo,
+        fecha_nacimiento: cliente.fecha_nacimiento,
         puntosActuales: cliente.puntos
       },
       promocionDelDia: config?.promo_del_dia || '¡Bienvenidos a Café Rewards!',
@@ -271,9 +277,11 @@ router.get('/:id/panel-fidelidad', async (req, res) => {
         mensajeEspecial: mensajeCumple
       }
     });
+
   } catch (error) {
     console.error('❌ Error al obtener panel de fidelidad:', error);
     res.status(500).json({ error: 'Error interno del servidor al obtener panel de fidelidad.' });
   }
 });
+
 export default router;
