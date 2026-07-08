@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function registrarClienteCliente() {
     const data = {
-        nombre: document.getElementById("nombre").value.trim(),a
+        nombre: document.getElementById("nombre").value.trim(),
         apellido: document.getElementById("apellido").value.trim(),
         celular: document.getElementById("celular").value.trim(),
         correo: document.getElementById("correo").value.trim() || null
