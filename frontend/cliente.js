@@ -1,16 +1,30 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Obtener el ID del cliente desde la barra de direcciones (URL)
-    // Ejemplo: /cliente?id=1
     const urlParams = new URLSearchParams(window.location.search);
-    const clienteId = urlParams.get('id');
+    let clienteId = urlParams.get('id');
 
+    // 🧠 💾 RECONOCIMIENTO AUTOMÁTICO (Pegamento de Memoria)
     if (!clienteId) {
-        document.getElementById('nombreCliente').innerText = "❌ Error: Enlace inválido";
-        return;
+        // Si no hay ID en la URL, vamos a ver si este celular ya lo guardó antes
+        clienteId = localStorage.getItem("jaqaku_cliente_id");
+        
+        if (clienteId) {
+            // ¡Sí tenía memoria! Reescribimos la URL de inmediato con el ID recuperado
+            window.location.href = `${window.location.pathname}?id=${clienteId}`;
+            return;
+        } else {
+            // El celular está limpio y no hay ID: es un cliente nuevo, mandamos a registrar
+            alert("⚠️ No encontramos tu tarjeta digital activa. Por favor, regístrate primero.");
+            window.location.href = "/registro.html";
+            return;
+        }
     }
 
-    // 🚀 MEJORA CRÍTICA: Generamos el QR por imagen inmediatamente al cargar.
-    // Así, si el backend está caído o usas Live Server, ¡el QR se dibuja siempre!
+    // Si el cliente entró con un ID en la URL, aseguramos respaldarlo en la memoria
+    localStorage.setItem("jaqaku_cliente_id", clienteId);
+
+
+    // 🚀 TU LÓGICA CORE ORIGINAL INTACTA: Generamos el QR por imagen inmediatamente
     generarQrClienteId(clienteId);
 
     // URL base de tu API expuesta por el backend
@@ -23,8 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (datos) {
             // 3. Pintar la información del cliente real traída de Postgres
-            document.getElementById('nombreCliente').innerText = `👋 ¡Hola, ${datos.cliente.nombreCompleto}!`;
+            document.getElementById('nombreCliente').innerText = `👋 ¡Hola, ${datos.cliente.nombreCompleto || datos.cliente.nombre}!`;
             document.getElementById('puntosActuales').innerText = datos.cliente.puntosActuales;
+            
+            // ☕ TRAE LAS OFERTAS DE TU PANEL ADMIN DIRECTO AL CELULAR DEL CLIENTE
             document.getElementById('promoDia').innerText = datos.promocionDelDia || "¡Disfruta del mejor café hoy!";
 
             // 4. Mostrar alerta si hoy es su cumpleaños
@@ -39,13 +55,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error("❌ Error al cargar datos del servidor:", error);
-        // Salvavidas visual: Evita que la pantalla asuste al usuario si hay un microcorte
-        document.getElementById('nombreCliente').innerText = "👋 ¡Bienvenido a Jacaqu Café!";
+        // Salvavidas visual corporativo
+        document.getElementById('nombreCliente').innerText = "👋 ¡Bienvenido a Jaqaku Café!";
         document.getElementById('promoDia').innerText = "¡Pide tu café favorito y acumula estrellas!";
     }
 });
 
-// --- 📲 FUNCIÓN INTERNA BLINDADA PARA EL QR POR IMAGEN ---
+// --- 📲 FUNCIÓN INTERNA BLINDADA PARA EL QR POR IMAGEN (Tuya e Intacta) ---
 function generarQrClienteId(clienteId) {
     const contenedor = document.getElementById("qrcode");
     if (!contenedor) {
@@ -57,10 +73,8 @@ function generarQrClienteId(clienteId) {
     contenedor.innerHTML = ""; 
 
     try {
-        // 🚀 MEJORA DE INTEGRACIÓN: Codificamos la URL completa del cliente.
-        // De esta forma, cuando el mostrador (barista.js) escanee el código,
-        // podrá extraer el ID de los parámetros con total precisión matemática.
-        const textoQr = `${window.location.origin}/cliente?id=${clienteId}`;
+        // Codificamos la URL completa del cliente.
+        const textoQr = `${window.location.origin}/cliente.html?id=${clienteId}`;
         
         // Genera la imagen del QR directo usando tu azul (#18405c)
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(textoQr)}&color=18405c`;

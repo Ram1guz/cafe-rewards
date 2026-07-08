@@ -1,0 +1,23 @@
+{
+  "short_name": "JaqakuClub",
+  "name": "Jaqaku Café - Tarjeta Digital",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/cliente.html",
+  "background_color": "#ffffff",
+  "theme_color": "#18405c",
+  "display": "standalone",
+  "orientation": "portrait"
+}
