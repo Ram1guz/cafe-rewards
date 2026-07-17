@@ -23,31 +23,61 @@ async function cargarConfiguracionAdmin() {
     try {
         const respuesta = await axios.get('/clientes/config-admin');
         console.log('Datos recibidos en el panel:', respuesta.data);
+        
         const config = respuesta.data;
 
         if (config) {
             const promo = document.getElementById('promo_del_dia');
-            const regalo = document.getElementById('cumple_regalo_desc');
+            const regalo = document.getElementById('regalo_cumpleanos');
             const plazo = document.getElementById('cumple_plazo_dias');
-            const bono = document.getElementById('cumple_puntos_bono');
+            const productoNombre = document.getElementById('producto_nombre');
+            const puntosNecesarios = document.getElementById('puntos_necesarios');
 
+            // Asignamos solo si los elementos existen en el HTML y en la respuesta
             if (promo) promo.value = config.promo_del_dia || '';
-            if (regalo) regalo.value = config.cumple_regalo_desc || '';
-            if (plazo) plazo.value = config.cumple_plazo_dias ?? 7;
-            if (bono) bono.value = config.cumple_puntos_bono ?? 0;
+            
+            // Mapeo inteligente con fallback para evitar errores si el backend sigue con nombres viejos
+            if (regalo) {
+                regalo.value = config.regalo_cumpleanos || config.cumple_regalo_desc || '';
+            }
+            
+            if (plazo) {
+                plazo.value = config.cumple_plazo_dias ?? 7;
+            }
+            
+            if (productoNombre) {
+                productoNombre.value = config.producto_nombre || 'Café de Regalo';
+            }
+            if (puntosNecesarios) {
+                puntosNecesarios.value = config.puntos_necesarios ?? config.cumple_puntos_bono ?? 10;
+            }
         }
+        
+        // ¡DESTRABAR EL SALUDO! Si llegamos aquí, quitamos el estado de carga de forma segura
+        const nombreAdmin = localStorage.getItem("usuarioNombre") || "Administrador";
+        const contenedorSaludo = document.getElementById("saludoAdmin");
+        if (contenedorSaludo) {
+            contenedorSaludo.innerHTML = `👑 Bienvenido: <strong>${nombreAdmin}</strong>`;
+        }
+
     } catch (error) {
         console.error('❌ Error al cargar configuración admin:', error);
+        
+        // Plan de rescate: si el backend falla localmente, liberamos la interfaz para poder cerrar sesión o navegar
+        const contenedorSaludo = document.getElementById("saludoAdmin");
+        if (contenedorSaludo) {
+            contenedorSaludo.innerHTML = `👑 Bienvenido: <strong>Admin (Modo Offline)</strong>`;
+        }
     }
 }
 
 // --- 🎛️ CONTROLADOR DE PESTAÑAS (NAVEGACIÓN) ---
 function cambiarSeccion(seccionId) {
-    // 1. Ocultar todas las secciones si existen
+    // 1. Ocultar todas las secciones
     const secciones = document.querySelectorAll('.seccion-admin');
     secciones.forEach(sec => sec.classList.remove('active'));
 
-    // 2. Desactivar todos los botones del menú si existen
+    // 2. Desactivar todos los botones del menú
     const botones = document.querySelectorAll('.btn-menu');
     botones.forEach(btn => btn.classList.remove('active'));
 
@@ -59,7 +89,7 @@ function cambiarSeccion(seccionId) {
         console.warn(`⚠️ No se encontró la sección: sec-${seccionId}`);
     }
     
-    // 4. Activar el botón correcto del menú de forma segura
+    // 4. Activar el botón correcto del menú
     const botonActivo = Array.from(botones).find(btn => {
         const onclickAttr = btn.getAttribute('onclick');
         return onclickAttr && onclickAttr.includes(seccionId);
@@ -75,10 +105,8 @@ window.cambiarSeccion = cambiarSeccion;
 
 // --- 👥 MÓDULO GESTIÓN DE BARISTAS (CONEXIÓN POSTGRESQL REAL) ---
 
-// 🔄 FUNCIÓN PARA TRAER LOS BARISTAS DESDE TU BACKEND
 async function obtenerBaristasBD() {
     try {
-        // Apunta a tu ruta de Express encargada de hacer: SELECT * FROM usuarios WHERE rol = 'BARISTA'
         const respuesta = await axios.get('/baristas');
         const baristas = respuesta.data;
         const tbody = document.getElementById('tablaBaristas');
@@ -105,7 +133,6 @@ async function obtenerBaristasBD() {
         });
     } catch (error) {
         console.error('❌ Error al obtener baristas:', error);
-        // Fallback visual por si tu backend está apagado en esta prueba
         const tbody = document.getElementById('tablaBaristas');
         if (tbody) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: red;">Error al conectar con la BD del Servidor</td></tr>`;
     }
@@ -125,17 +152,15 @@ document.getElementById('formBarista').addEventListener('submit', async (e) => {
 
     try {
         if (idInput) {
-            // Modo Edición: Actualizar barista existente en base de datos (PUT)
             await axios.put(`/baristas/${idInput}`, { nombre: nombreInput, pin: pinInput });
             alert("✅ Datos del barista corregidos con éxito.");
         } else {
-            // Modo Creación: Añadir nuevo barista a la base de datos (POST)
             await axios.post('/baristas', { nombre: nombreInput, pin: pinInput });
             alert("➕ Barista registrado y guardado en la Base de Datos.");
         }
         
         limpiarFormularioBarista();
-        obtenerBaristasBD(); // Recargar la tabla desde Postgres
+        obtenerBaristasBD(); 
     } catch (error) {
         console.error('❌ Error al guardar el barista:', error);
         alert('Hubo un error al guardar en el servidor local.');
@@ -167,7 +192,7 @@ async function eliminarBarista(id) {
     if (confirm("❌ ¿Estás seguro de que quieres dar de baja a este barista de la Base de Datos?")) {
         try {
             await axios.delete(`/baristas/${id}`);
-            obtenerBaristasBD(); // Actualizar listado
+            obtenerBaristasBD(); 
         } catch (error) {
             console.error('Error al eliminar:', error);
             alert('No se pudo borrar el registro del servidor.');
@@ -182,7 +207,6 @@ async function obtenerClientesReporteBD() {
     if (!tbody) return;
 
     try {
-        // Cambia '/clientes' por tu endpoint real si usas otro para los reportes masivos
         const respuesta = await axios.get('/clientes'); 
         const clientes = respuesta.data;
         tbody.innerHTML = '';
@@ -210,11 +234,14 @@ async function obtenerClientesReporteBD() {
 // --- 💾 ENVÍO DEL FORMULARIO DE CAMPAÑA ---
 document.getElementById('formAdmin').addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // Captura los datos nuevos limpios alineados al nuevo index.html
     const datosCampana = {
         promo_del_dia: document.getElementById('promo_del_dia').value.trim(),
-        cumple_regalo_desc: document.getElementById('cumple_regalo_desc').value.trim(),
+        regalo_cumpleanos: document.getElementById('regalo_cumpleanos').value.trim(),
         cumple_plazo_dias: parseInt(document.getElementById('cumple_plazo_dias').value, 10),
-        cumple_puntos_bono: parseInt(document.getElementById('cumple_puntos_bono').value, 10)
+        producto_nombre: document.getElementById('producto_nombre').value.trim(),
+        puntos_necesarios: parseInt(document.getElementById('puntos_necesarios').value, 10)
     };
 
     try {
@@ -241,6 +268,7 @@ function generarQrMostrador() {
 
         contenedor.innerHTML = ""; // Limpieza estricta de duplicados
 
+        // Funciona dinámicamente: localhost en desarrollo y jaqaku.com en AWS
         const urlAppCliente = `${window.location.origin}/cliente`;
 
         if (typeof QRCode === "undefined") {
@@ -258,5 +286,3 @@ function generarQrMostrador() {
         });
     }, 60); 
 }
-
-

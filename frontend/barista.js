@@ -48,9 +48,13 @@ function alternarCamara() {
     
     if (!html5QrcodeScanner) {
         readerDiv.classList.remove("hidden");
+        
+        // Configuración blindada para tablets: solo activa la cámara física
         html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
             fps: 10, 
-            qrbox: { width: 250, height: 250 } 
+            qrbox: { width: 250, height: 250 },
+            // 🎯 ESTA LÍNEA ELIMINA EL BOTÓN DE SUBIR IMAGENES Y ARCHIVOS COLOQUIALES
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
         }, false);
         
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);

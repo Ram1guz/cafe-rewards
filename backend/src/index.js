@@ -1,14 +1,17 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv'; // 💡 Importación manual segura
 import clienteRoutes from './routes/clienteRoutes.js';
 import baristaRoutes from './routes/baristaRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// 🧠 💾 Forzamos a dotenv a buscar el .env una carpeta hacia atrás de 'src' de manera absoluta
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,24 +28,18 @@ const rutaFrontend = path.join(__dirname, '..', '..', 'frontend');
 app.use(express.static(rutaFrontend));
 
 // Rutas estáticas - Interfaces de usuario por rol
-// GET / → Cliente (registro y consulta de puntos)
 app.get('/', (req, res) => {
   res.sendFile(path.join(rutaFrontend, 'index.html'));
 });
 
-// GET /barista → Barista (mostrador con PIN y escaneo de QR)
-// En producción el index actúa como pantalla única; en local usamos login.html
 app.get('/barista', (req, res) => {
   res.sendFile(path.join(rutaFrontend, 'login.html'));
 });
 
-// En producción el index actúa como pantalla única para barista; en local
-// queremos que /admin sirva el archivo local index.html (como en prod)
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(rutaFrontend, 'index.html'));
 });
 
-// GET /cliente → Cliente (tarjeta digital de fidelidad)
 app.get('/cliente', (req, res) => {
   res.sendFile(path.join(rutaFrontend, 'cliente.html'));
 });
@@ -55,12 +52,10 @@ app.use('/api/auth', authRoutes);
 // 🧪 RUTA DE PRUEBA DE CORREOS (localhost:3000/mail-test)
 app.get('/mail-test', async (req, res) => {
   try {
-    // Importamos tus módulos de servicio
     const { enviarCorreo } = await import('./services/correoService.js');
     const { obtenerPlantillaCumpleanos } = await import('./services/plantillasCorreo.js');
     const { default: prisma } = await import('./prisma.js');
 
-    // Buscamos al usuario "Ramiro" que registraste con tu correo real
     const cliente = await prisma.cliente.findFirst({
       where: { correo: 'ramiguz@gmail.com' }
     });
@@ -69,14 +64,12 @@ app.get('/mail-test', async (req, res) => {
       return res.status(404).send("❌ No se encontró ningún cliente con el correo ramiguz@gmail.com en la base de datos. Regístralo primero desde /barista.");
     }
 
-    // Generamos la hermosa plantilla corporativa Azul #18405c usando sus datos reales
     const htmlPrueba = obtenerPlantillaCumpleanos(
       cliente.nombre, 
       "Un Café de Cortesía por tu Cumpleaños ☕", 
       "10/07/2026"
     );
 
-    // Disparamos el correo real a través de Gmail
     console.log(`⏳ Intentando enviar correo de prueba a ${cliente.correo}...`);
     const exito = await enviarCorreo(cliente.correo, "🎉 ¡Feliz Cumpleaños en Jacaqu Café! ☕", htmlPrueba);
 
@@ -98,6 +91,7 @@ app.get('/mail-test', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor listo y escuchando en el puerto ${PORT}`);
+// 🎯 ESCUCHA EN TODA LA RED LOCAL (0.0.0.0) para que celular y tablet puedan conectarse
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor listo y escuchando en la RED LOCAL en el puerto ${PORT}`);
 });

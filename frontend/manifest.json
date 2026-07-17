@@ -1,22 +1,21 @@
 {
-  "short_name": "JaqakuClub",
-  "name": "Jaqaku Café - Tarjeta Digital",
+  "short_name": "Café Rewards",
+  "name": "Jacaqu Café Rewards",
   "icons": [
     {
       "src": "logo.png",
-      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo.png",
-      "sizes": "512x512",
+      "src": "logo-cafe-512.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "512x512"
     }
   ],
-  "start_url": "/cliente.html",
-  "background_color": "#ffffff",
+  "start_url": "/",
+  "background_color": "#f4f6f9",
   "theme_color": "#18405c",
   "display": "standalone",
   "orientation": "portrait"

@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Estructura - cafe_rewars</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 20px; background: #f8fafc; color: #0f172a; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 20px; }
     header { margin-bottom: 12px; }
     #controls { margin-bottom: 12px; }
-    button { padding: 6px 10px; cursor: pointer; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
-    #diagram { border: 1px solid #e2e8f0; padding: 16px; overflow: auto; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06); }
-    .mermaid { min-width: 1100px; }
+    button { padding: 6px 10px; cursor: pointer; }
+    #diagram { border: 1px solid #eee; padding: 10px; overflow: auto; }
   </style>
 </head>
 <body>
@@ -24,22 +23,22 @@
 
   <div id="diagram" class="mermaid">
 flowchart TB
-  root["cafe_rewars"]
-  root --> docker_compose["docker-compose.yml"]
+  root[cafe_rewars]
+  root --> docker_compose[docker-compose.yml]
   root --> backend
   root --> docs
   root --> frontend
 
   subgraph backend_sg [backend]
-    be_env[".env"]
-    be_gitignore[".gitignore"]
-    be_docker["Dockerfile"]
-    be_limpiar["limpiar.js"]
-    be_pkg["package.json"]
-    be_lock["package-lock.json"]
-    be_prisma["prisma"]
-    be_src["src"]
-    be_test["test-db.js"]
+    be_env[.env]
+    be_gitignore[.gitignore]
+    be_docker[Dockerfile]
+    be_limpiar[limpiar.js]
+    be_pkg[package.json]
+    be_lock[package-lock.json]
+    be_prisma[prisma]
+    be_src[src]
+    be_test[test-db.js]
 
     backend --> be_env
     backend --> be_gitignore
@@ -111,27 +110,27 @@ flowchart TB
   end
 
   subgraph docs_sg [docs]
-    docs_mermaid["estructura_proyecto_mermaid.md"]
-    docs_spect["Spect.md"]
-    docs_structure_html["structure.html"]
-    docs_structure_mmd["structure.mmd"]
+    docs_mermaid[estructura_proyecto_mermaid.md]
+    docs_spect[Spect.md]
+    docs_structure_html[structure.html]
+    docs_structure_mmd[structure.mmd]
   end
 
   subgraph frontend_sg [frontend]
-    fe_admin_js["admin.js"]
-    fe_barista_html["barista.html"]
-    fe_barista_js["barista.js"]
-    fe_cliente_html["cliente.html"]
-    fe_cliente_js["cliente.js"]
-    fe_index_html["index.html"]
-    fe_login_html["login.html"]
-    fe_login_js["login.js"]
-    fe_logo["logo.png"]
-    fe_manifest["manifest.json"]
-    fe_registro_html["registro.html"]
-    fe_registro_js["registro.js"]
-    fe_reglas["reglas_desarrollo.md"]
-    fe_style_css["style.css"]
+    fe_admin_js[admin.js]
+    fe_barista_html[barista.html]
+    fe_barista_js[barista.js]
+    fe_cliente_html[cliente.html]
+    fe_cliente_js[cliente.js]
+    fe_index_html[index.html]
+    fe_login_html[login.html]
+    fe_login_js[login.js]
+    fe_logo[logo.png]
+    fe_manifest[manifest.json]
+    fe_registro_html[registro.html]
+    fe_registro_js[registro.js]
+    fe_reglas[reglas_desarrollo.md]
+    fe_style_css[style.css]
 
     frontend --> fe_admin_js
     frontend --> fe_barista_html

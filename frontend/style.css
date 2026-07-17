@@ -1,4 +1,6 @@
-/* Estilos Base */
+/* ==========================================
+   ☕ ESTILOS BASE ORIGINALES CAFÉ REWARDS 
+   ========================================== */
 body {
     background-color: #f4f6f9;
     font-family: Arial, sans-serif;
@@ -78,4 +80,45 @@ input {
 /* LA CLAVE: Ocultar bloques */
 .hidden {
     display: none !important;
+}
+
+
+/* ==========================================
+   🚀 OPTIMIZACIÓN TÁCTIL Y MEJORAS DE CÁMARA (TABLET/MOVIL)
+   ========================================== */
+
+/* 🎯 Botones nativos del Lector QR (Permisos, Iniciar Cámara, etc.) */
+#reader button {
+    background-color: #18405c !important; /* Tu azul corporativo */
+    color: white !important;
+    padding: 14px 20px !important;       /* Altura generosa para pulsaciones táctiles */
+    font-size: 16px !important;          /* Texto grande */
+    margin: 12px 0 !important;           /* Separación para que no estén juntos */
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: bold !important;
+    width: 100% !important;              /* Ancho completo en pantallas pequeñas */
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 🎯 El contenedor del lector de la cámara */
+#reader {
+    border: 2px dashed #18405c !important; /* Borde con estilo de escáner */
+    border-radius: 12px !important;
+    padding: 15px !important;
+    background-color: white !important;
+    box-sizing: border-box;
+}
+
+/* 🎯 Agranda un poco los inputs generales si se visualizan en pantallas táctiles */
+@media (max-width: 768px) {
+    input {
+        padding: 14px 12px !important; /* Más altos para que sea fácil tocarlos y escribir */
+        font-size: 16px !important;
+    }
+    
+    .button-row {
+        gap: 14px !important; /* Más separación entre botones alineados */
+    }
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Café Rewards - Administrador</title>
     <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -82,26 +83,36 @@
             </details>
         </div>
 
-        <!-- ⚙️ SECCIÓN CAMPAÑA ADAPTADA (TEXTOS CLAROS Y SEPARADOS) -->
+        <!-- ⚙️ SECCIÓN CAMPAÑA ADAPTADA (TEXTOS CLAROS Y SEPARADOS DE RAÍZ) -->
         <div id="sec-campana" class="card seccion-admin active" style="padding: 15px;">
             <h2 style="font-size: 15px; color: #18405c; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px;">⚙️ Configurar Campaña Activa</h2>
             <form id="formAdmin">
+                <!-- 1. ANUNCIO GENERAL -->
                 <div style="text-align: left; margin-bottom: 12px;">
                     <label style="font-size: 12px; font-weight: bold; color: #18405c;">📢 Anuncio / Pizarra Comercial del Día:</label>
                     <input type="text" id="promo_del_dia" placeholder="Ej: Hoy 2x1 en empanadas de queso" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
                 </div>
-                <div style="text-align: left; margin-bottom: 12px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #18405c;">🎁 Premio Oficial de Fidelidad (Y Regalo de Cumpleaños):</label>
-                    <input type="text" id="cumple_regalo_desc" placeholder="Ej: Café Americano de Cortesía" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
+
+                <!-- 2. CONFIGURACIÓN CUMPLEAÑOS (Tabla ConfiguracionSistema) -->
+                <div style="text-align: left; margin-bottom: 12px; border-top: 1px dashed #eee; padding-top: 10px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #b45309;">🎂 Regalo de Cumpleaños (En Especie):</label>
+                    <input type="text" id="regalo_cumpleanos" placeholder="Ej: Porción de Tarta de Cortesía" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
                 </div>
                 <div style="text-align: left; margin-bottom: 12px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #18405c;">⏳ Plazo de Validez (Días para reclamar en el correo):</label>
+                    <label style="font-size: 12px; font-weight: bold; color: #b45309;">⏳ Plazo de Validez (Días para reclamar el regalo):</label>
                     <input type="number" id="cumple_plazo_dias" placeholder="Ej: 7" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
                 </div>
-                <div style="text-align: left; margin-bottom: 15px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #18405c;">⭐ Puntos Requeridos para Canjear la Recompensa:</label>
-                    <input type="number" id="cumple_puntos_bono" placeholder="Ej: 10" style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
+
+                <!-- 3. CONFIGURACIÓN RECOMPENSA FIDELIDAD (Tabla Producto) -->
+                <div style="text-align: left; margin-bottom: 12px; border-top: 1px dashed #eee; padding-top: 10px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c;">🏆 Premio de Fidelidad Oficial:</label>
+                    <input type="text" id="producto_nombre" placeholder="Ej: Café Americano Mediano" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
                 </div>
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #18405c;">⭐ Puntos Requeridos para Canjear:</label>
+                    <input type="number" id="puntos_necesarios" placeholder="Ej: 10" required style="width: 100%; padding: 8px; border-radius:8px; border:1px solid #ccc;">
+                </div>
+
                 <button type="submit" class="btn-registrar" style="width: 100%; background-color: #18405c;">💾 GUARDAR CONFIGURACIÓN</button>
             </form>
         </div>

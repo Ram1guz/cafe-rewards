@@ -3,21 +3,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function registrarClienteCliente() {
+    // Capturamos el valor del celular de forma segura como texto antes de limpiarlo
+    const celularRaw = document.getElementById("celular").value;
+    const celularTexto = celularRaw ? celularRaw.toString().trim() : "";
+
     const data = {
         nombre: document.getElementById("nombre").value.trim(),
         apellido: document.getElementById("apellido").value.trim(),
-        celular: document.getElementById("celular").value.trim(),
+        celular: celularTexto,
         correo: document.getElementById("correo").value.trim() || null
     };
 
+    // Validación visual de campos obligatorios
     if (!data.nombre || !data.apellido || !data.celular) {
         alert("⚠️ Por favor ingresa tu Nombre, Apellido y Celular para poder registrarte.");
         return;
     }
 
     try {
-        // 🎯 MEJORA DE ARQUITECTURA: Usamos la ruta relativa. 
-        // Nginx se encargará de redirigir al puerto 3000 de forma transparente tanto en local como en la nube.
+        // 🎯 Usamos la ruta relativa compartida para desarrollo y producción
         const respuesta = await axios.post('/clientes', data);
         const clienteCreado = respuesta.data;
 
@@ -38,6 +42,13 @@ async function registrarClienteCliente() {
 
     } catch (error) {
         console.error("❌ Error en registro:", error);
-        alert("❌ Ocurrió un error al procesar tu registro. Por favor verifica los datos o solicita ayuda en caja.");
+        
+        // 💡 MEJORA: Validamos si el backend detectó que el celular ya existe (Conflicto 409)
+        if (error.response && error.response.status === 409) {
+            alert("📢 Este número de celular ya está registrado. Si necesitas actualizar tus datos, por favor solicita ayuda en caja.");
+        } else {
+            // Error genérico para caídas de red o fallas internas
+            alert("❌ Ocurrió un error al procesar tu registro. Por favor verifica los datos o solicita ayuda en caja.");
+        }
     }
 }
