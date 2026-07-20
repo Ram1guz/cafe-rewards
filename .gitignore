@@ -1,4 +1,6 @@
 node_modules/
 .env
+
+ # Ignorar logs y certificados en el servidor
 proxy/letsencrypt/
- main
+proxy/data/
