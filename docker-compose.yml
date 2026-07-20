@@ -32,7 +32,7 @@ services:
     expose:
       - "3000"
     volumes:
-      - ./frontend:/app/frontend    
+      - ./frontend:/frontend    
     depends_on:
       - db
     networks:
@@ -48,9 +48,8 @@ services:
           - '80:80'   # Escucha HTTP en toda la red
           - '443:443' # Escucha HTTPS en toda la red
           - '81:81'   # Escucha el panel en toda la red (Obligatorio)
-    
-    volumes:
-     
+  
+    volumes:    
       - ./proxy/data:/data
       - ./proxy/letsencrypt:/etc/letsencrypt
     depends_on:
