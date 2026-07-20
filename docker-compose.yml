@@ -45,11 +45,10 @@ services:
     restart: always
     ports:
       # Puertos públicos para los clientes y los QR
-       - '0.0.0.0:80:80'   # Escucha HTTP en toda la red
-       - '0.0.0.0:443:443' # Escucha HTTPS en toda la red
-       - '0.0.0.0:81:81'   # Escucha el panel en toda la red (Obligatorio)
-      # Panel visual de administración del Proxy
-
+          - '80:80'   # Escucha HTTP en toda la red
+          - '443:443' # Escucha HTTPS en toda la red
+          - '81:81'   # Escucha el panel en toda la red (Obligatorio)
+    
     volumes:
      
       - ./proxy/data:/data
