@@ -27,9 +27,9 @@ const rutaFrontend = path.join(__dirname, '..', '..', 'frontend');
 // Servir archivos estáticos
 app.use(express.static(rutaFrontend));
 
-// Rutas estáticas - Interfaces de usuario por rol
+/// Rutas estáticas - Interfaces de usuario por rol
 app.get('/', (req, res) => {
-  res.sendFile(path.join(rutaFrontend, 'index.html'));
+  res.sendFile(path.join(rutaFrontend, 'bienvenida.html')); // 👈 ¡Apunta aquí!
 });
 
 app.get('/barista', (req, res) => {

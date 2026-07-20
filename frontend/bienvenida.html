@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaqaku Café</title>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #18405c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Parisienne', cursive;
+            font-size: 4rem;
+            margin: 0;
+        }
+        .slogan {
+            font-size: 15px;
+            font-style: italic;
+            color: #e2e8f0;
+            margin-top: 5px;
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.5px;
+        }
+        .contenedor-botones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 80%;
+            max-width: 280px;
+        }
+        .btn-opcion {
+            background-color: white;
+            color: #18405c;
+            border: none;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-opcion:active {
+            transform: scale(0.97);
+        }
+        .btn-funcionario {
+            background-color: transparent;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="logo.png" alt="Logo Jaqaku" style="height: 110px; margin-bottom: 10px; object-fit: contain;">
+    <h1>Jaqaku</h1>
+    <p class="slogan">Un café con alma boliviana</p>
+
+    <div class="contenedor-botones">
+        <!-- Al presionar Cliente, va a cliente.html mediante la ruta /cliente -->
+        <button class="btn-opcion" onclick="window.location.href='/cliente'">¿Cliente?</button>
+        
+        <!-- Al presionar Funcionario, va a login.html mediante la ruta /barista -->
+        <button class="btn-opcion btn-funcionario" onclick="window.location.href='/barista'">¿Funcionario?</button>
+    </div>
+
+</body>
+</html>
