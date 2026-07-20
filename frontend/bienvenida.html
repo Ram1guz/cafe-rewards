@@ -2,11 +2,14 @@
 <html lang="es" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 📱 ESTA LÍNEA ES CLAVE PARA QUE EN EL CELULAR NO SE VEA ENANO -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jaqaku Café</title>
     <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             background-color: #18405c;
             color: white;
@@ -14,64 +17,71 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
+        }
+        .logo-img {
+            height: 120px;
+            width: auto;
+            margin-bottom: 10px;
+            object-fit: contain;
         }
         h1 {
             font-family: 'Parisienne', cursive;
-            font-size: 4rem;
+            font-size: 3.8rem;
             margin: 0;
+            line-height: 1;
         }
         .slogan {
-            font-size: 15px;
+            font-size: 1.1rem;
             font-style: italic;
             color: #e2e8f0;
-            margin-top: 5px;
+            margin-top: 10px;
             margin-bottom: 2.5rem;
-            letter-spacing: 0.5px;
         }
         .contenedor-botones {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            width: 80%;
-            max-width: 280px;
+            gap: 18px;
+            width: 100%;
+            max-width: 320px;
         }
         .btn-opcion {
-            background-color: white;
+            background-color: #ffffff;
             color: #18405c;
             border: none;
-            padding: 14px;
-            font-size: 15px;
+            padding: 16px 20px;
+            font-size: 1.1rem;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            width: 100%;
         }
         .btn-opcion:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
         .btn-funcionario {
             background-color: transparent;
             color: #ffffff;
-            border: 1px solid #ffffff;
+            border: 2px solid #ffffff;
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
 
-    <img src="logo.png" alt="Logo Jaqaku" style="height: 110px; margin-bottom: 10px; object-fit: contain;">
+    <img src="logo.png" alt="Logo Jaqaku" class="logo-img">
     <h1>Jaqaku</h1>
     <p class="slogan">Un café con alma boliviana</p>
 
     <div class="contenedor-botones">
-        <!-- Al presionar Cliente, va a cliente.html mediante la ruta /cliente -->
-        <button class="btn-opcion" onclick="window.location.href='/cliente'">¿Cliente?</button>
-        
-        <!-- Al presionar Funcionario, va a login.html mediante la ruta /barista -->
-        <button class="btn-opcion btn-funcionario" onclick="window.location.href='/barista'">¿Funcionario?</button>
+        <button class="btn-opcion" onclick="window.location.href='/cliente'">✨ ¿Cliente?</button>
+        <button class="btn-opcion btn-funcionario" onclick="window.location.href='/barista'">☕ ¿Funcionario?</button>
     </div>
 
 </body>
