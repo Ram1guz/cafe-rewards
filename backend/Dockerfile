@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Instalar dependencias necesarias para Prisma en Alpine
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
 # Copiar archivos de dependencias
 COPY package*.json ./
 RUN npm install --only=production
