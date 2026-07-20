@@ -25,11 +25,11 @@ app.use(express.json());
 const rutaFrontend = path.join(__dirname, '..', '..', 'frontend');
 
 // Servir archivos estáticos
-app.use(express.static(rutaFrontend));
+app.use(express.static(rutaFrontend, { index: false })); // 👈 Agregamos { index: false } para que no fuerce abrir index.html por defecto
 
-/// Rutas estáticas - Interfaces de usuario por rol
+// Rutas estáticas - Interfaces de usuario por rol
 app.get('/', (req, res) => {
-  res.sendFile(path.join(rutaFrontend, 'bienvenida.html')); // 👈 ¡Apunta aquí!
+  res.sendFile(path.join(rutaFrontend, 'bienvenida.html')); // 👈 La raíz abre bienvenida
 });
 
 app.get('/barista', (req, res) => {

@@ -2,8 +2,8 @@
 <html lang="es" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
-    <!-- 📱 ESTA LÍNEA ES CLAVE PARA QUE EN EL CELULAR NO SE VEA ENANO -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 📱 ESTA LÍNEA ES LA QUE HACE QUE NO SE VEA PEQUEÑO EN EL CELULAR/LIVE SERVER -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jaqaku Café</title>
     <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
     <style>
@@ -20,34 +20,34 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             text-align: center;
         }
         .logo-img {
-            height: 120px;
+            height: 110px;
             width: auto;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             object-fit: contain;
         }
         h1 {
             font-family: 'Parisienne', cursive;
-            font-size: 3.8rem;
+            font-size: 3.5rem;
             margin: 0;
-            line-height: 1;
+            color: #ffffff;
         }
         .slogan {
             font-size: 1.1rem;
             font-style: italic;
             color: #e2e8f0;
-            margin-top: 10px;
+            margin-top: 5px;
             margin-bottom: 2.5rem;
         }
         .contenedor-botones {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 15px;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
         }
         .btn-opcion {
             background-color: #ffffff;
@@ -56,14 +56,13 @@
             padding: 16px 20px;
             font-size: 1.1rem;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
             width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .btn-opcion:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
         .btn-funcionario {
             background-color: transparent;
