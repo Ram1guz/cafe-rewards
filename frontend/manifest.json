@@ -1,21 +1,16 @@
 {
-  "short_name": "Café Rewards",
-  "name": "Jacaqu Café Rewards",
+  "short_name": "Jaqaku",
+  "name": "Jaqaku Café Rewards",
   "icons": [
     {
       "src": "logo.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "logo-cafe-512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any"
     }
   ],
   "start_url": "/",
-  "background_color": "#f4f6f9",
+  "background_color": "#18405c",
   "theme_color": "#18405c",
   "display": "standalone",
   "orientation": "portrait"
