@@ -269,8 +269,7 @@ function generarQrMostrador() {
         contenedor.innerHTML = ""; // Limpieza estricta de duplicados
 
         // Funciona dinámicamente: localhost en desarrollo y jaqaku.com en AWS
-        const urlAppCliente = `${window.location.origin}/cliente`;
-
+        const urlAppCliente = `${window.location.origin}`;
         if (typeof QRCode === "undefined") {
             console.error("La librería QRCode no está disponible globalmente.");
             return;
